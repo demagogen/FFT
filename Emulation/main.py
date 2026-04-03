@@ -1,53 +1,14 @@
 # FFT (Fast Fourier Transform)
 # main.py
 
-class FFT4:
-    def __init__(self, polynomial: list[complex]):
-        self.SIZE                  = 4
-        self.polynomial            = [0j] * 4
-        self.polynomial            = polynomial
-        self.partition_polynomial1 = [0j] * 2
-        self.partition_polynomial2 = [0j] * 2
-        self.partition_vector1     = [0j] * 2
-        self.partition_vector2     = [0j] * 2
-        self.result_vector         = [0j] * 4
-
-    def __repr__(self):
-        return f"FFT4(polynomial='{self.polynomial}', size={self.SIZE})"
-
-    def split(self):
-        self.partition_polynomial1 = [self.polynomial[0], self.polynomial[2]]
-        self.partition_polynomial2 = [self.polynomial[1], self.polynomial[3]]
-
-    def DFT(self):
-        # w(2, 0) = 1
-        # w(2, 1) = -1
-        # w - is a root from one
-        self.partition_vector1[0] = self.partition_polynomial1[0] + self.partition_polynomial1[1]
-        self.partition_vector1[1] = self.partition_polynomial1[0] - self.partition_polynomial1[1]
-        self.partition_vector2[0] = self.partition_polynomial2[0] + self.partition_polynomial2[1]
-        self.partition_vector2[1] = self.partition_polynomial2[0] - self.partition_polynomial2[1]
-
-    def synchronize(self):
-        w40 = complex( 1,  0)
-        w41 = complex( 0,  1)
-        w42 = complex(-1,  0)
-        w43 = complex( 0, -1)
-        self.result_vector[0] = self.partition_vector1[0] + w40 * self.partition_vector2[0]
-        self.result_vector[1] = self.partition_vector1[1] + w41 * self.partition_vector2[1]
-        self.result_vector[2] = self.partition_vector1[0] - w42 * self.partition_vector2[0]
-        self.result_vector[3] = self.partition_vector1[1] - w43 * self.partition_vector2[1]
-        return self.result_vector
-
-    def count(self):
-        self.split()
-        self.DFT()
-        return self.synchronize()
+import FFT
 
 def main():
-    FFT = FFT4([1, 2, 3, 4])
-    print(FFT)
-    counted_fft = FFT.count()
-    print(counted_fft)
+    for a1 in range(1, 10):
+        for a2 in range(1, 10):
+            for a3 in range(1, 10):
+                for a4 in range(1, 10):
+                    FFTclass = FFT.FFT4([a1, a2, a3, a4])
+                    print("[", a1, ", ", a2, ", ", a3, ", ", a4, "]", " --- ", FFTclass.count())
 
 main()
