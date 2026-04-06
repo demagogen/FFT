@@ -1,4 +1,4 @@
-import numpy as np
+import numpy
 import FFT
 
 def clean_complex_numpy(arr):
@@ -10,11 +10,11 @@ def fft_testbench():
         for input_complex1 in range(1, 10):
             for input_complex2 in range(1, 10):
                 for input_complex3 in range(1, 10):
-                    my_FFT = FFT.FFT4([input_complex0, input_complex1, input_complex2, input_complex3])
-                    my_fft_result = my_FFT.count()
-                    numpy_fft_result = np.fft.fft([input_complex0, input_complex1, input_complex2, input_complex3])
+                    my_fft = FFT.FFT4([input_complex0, input_complex1, input_complex2, input_complex3])
+                    my_fft_result = my_fft.count()
+                    numpy_fft_result = numpy.fft.fft([input_complex0, input_complex1, input_complex2, input_complex3])
 
-                    if np.allclose(my_fft_result, numpy_fft_result):
+                    if numpy.allclose(my_fft_result, numpy_fft_result):
                         print("True: [", input_complex0, ", ", input_complex1, ", ", input_complex2, ", ", input_complex3, "] ->", my_fft_result)
                     else:
                         print("False: [", input_complex0, ", ", input_complex1, ", ", input_complex2, ", ", input_complex3, "]")

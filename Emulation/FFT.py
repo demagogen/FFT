@@ -16,10 +16,7 @@ class FFT4:
         self.partition_polynomial1 = [self.polynomial[0], self.polynomial[2]]
         self.partition_polynomial2 = [self.polynomial[1], self.polynomial[3]]
 
-    def DFT(self):
-        # w(2, 0) = 1
-        # w(2, 1) = -1
-        # w - is a root from one
+    def dft(self):
         self.partition_vector1[0] = self.partition_polynomial1[0] + self.partition_polynomial1[1]
         self.partition_vector1[1] = self.partition_polynomial1[0] - self.partition_polynomial1[1]
         self.partition_vector2[0] = self.partition_polynomial2[0] + self.partition_polynomial2[1]
@@ -28,8 +25,6 @@ class FFT4:
     def synchronize(self):
         w40 = complex( 1,  0)
         w41 = complex( 0,  1)
-        # w42 = complex(-1,  0)
-        # w43 = complex( 0, -1)
         self.result_vector[0] = self.partition_vector1[0] + w40 * self.partition_vector2[0]
         self.result_vector[3] = self.partition_vector1[1] + w41 * self.partition_vector2[1]
         self.result_vector[2] = self.partition_vector1[0] - w40 * self.partition_vector2[0]
@@ -38,8 +33,5 @@ class FFT4:
 
     def count(self):
         self.split()
-        self.DFT()
+        self.dft()
         return self.synchronize()
-
-    # def clean_complex(self):
-        # return [(round(self.result_vector.real, 2), round(self.result_vector.imag, 2)) for complex in self.result_vector] # TODO magic number
