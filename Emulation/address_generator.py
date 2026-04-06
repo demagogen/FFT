@@ -17,7 +17,6 @@ class AddressGenerator:
         self.lut_twiddle_factors = 0
         self.from_control_block  = [0] * self.CONTROL_BLOCK_BUS_WIDTH
 
-    # FFT4 managing
-    # def send_coefficients_to_fft(self, ram : list[complex]):
-        # if not ram:
-            # print("Error: Try read data from empty data")
+    # Right now I do realization with one step. In it we don't need to add new addresses with s rule.
+    def generate_input_addresses(self, state):
+        return [0, 1, 2, 3]

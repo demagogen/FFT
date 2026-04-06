@@ -17,10 +17,10 @@ class FFT4:
         self.partition_polynomial2 = [self.polynomial[1], self.polynomial[3]]
 
     def dft(self):
-        self.partition_vector1[0] = self.partition_polynomial1[0] + self.partition_polynomial1[1]
-        self.partition_vector1[1] = self.partition_polynomial1[0] - self.partition_polynomial1[1]
-        self.partition_vector2[0] = self.partition_polynomial2[0] + self.partition_polynomial2[1]
-        self.partition_vector2[1] = self.partition_polynomial2[0] - self.partition_polynomial2[1]
+        self.partition_vector1[0] = self.partition_polynomial1[0] + self.partition_polynomial1[1] # 0
+        self.partition_vector1[1] = self.partition_polynomial1[0] - self.partition_polynomial1[1] # 2
+        self.partition_vector2[0] = self.partition_polynomial2[0] + self.partition_polynomial2[1] # 1
+        self.partition_vector2[1] = self.partition_polynomial2[0] - self.partition_polynomial2[1] # 3
 
     def synchronize(self):
         w40 = complex( 1,  0)
@@ -35,3 +35,5 @@ class FFT4:
         self.split()
         self.dft()
         return self.synchronize()
+
+    # def fft_count_iteration(self, ):
