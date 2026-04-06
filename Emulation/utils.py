@@ -71,3 +71,20 @@ class Fixedpoint:
         c2 = Fixedpoint.bits_to_complex(bits2)
         res = Fixedpoint.verilog_style_mult(c1, c2)
         return Fixedpoint.make_verilog_complex(res.real, res.imag)
+
+    @staticmethod
+    def bits_to_complex_list(bit_array: list[int]) -> list[complex]:
+        complex_list = []
+        for i in range(0, len(bit_array), 32):
+            chunk = bit_array[i:i + 32]
+            if len(chunk) == 32:
+                complex_list.append(Fixedpoint.bits_to_complex(chunk))
+        return complex_list
+
+    @staticmethod
+    def nested_bits_to_complex(nested_list: list[list[int]]) -> list[complex]:
+        complex_list = []
+        for chunk in nested_list:
+            if len(chunk) == 32:
+                complex_list.append(Fixedpoint.bits_to_complex(chunk))
+        return complex_list

@@ -94,6 +94,8 @@ class FFTAccelerator:
 def main():
     fft_accelerator = FFTAccelerator()
     fft_accelerator_result = fft_accelerator.driver([1, 2, 3, 4])
-    # print(fft_accelerator_result)
+    coeffs = utils.Fixedpoint.nested_bits_to_complex(fft_accelerator_result)
+    print(coeffs)
+    print(fft_accelerator_result)
 
 main()
