@@ -7,6 +7,7 @@ import lut_with_twiddle_factors
 import scale
 import rom
 import one_depth_buffer
+import utils
 
 class FFTAccelerator:
     def __init__(self):
@@ -50,19 +51,6 @@ class FFTAccelerator:
         # Guts
         self.state = 0
 
-    def complex_to_verilog_bits(self, complex_nums: list[complex]) -> list[int]:
-        bit_array = []
-
-        for complex in complex_nums:
-            real      = int(complex.real) & 0xFFFF
-            imaginary = int(complex.imag) & 0xFFFF
-
-            for value in [real, imaginary]:
-                bits = [int(bit) for bit in f"{value:016b}"]
-                bit_array.extend(bits)
-
-        return bit_array
-
     def data_to_ram(self):
         self.dual_port_ram.ram[0] = self.data[0]
         self.dual_port_ram.ram[1] = self.data[1]
@@ -78,9 +66,10 @@ class FFTAccelerator:
         return [self.dual_port_ram.ram[input_addresses[0]], self.dual_port_ram.ram[input_addresses[1]], self.dual_port_ram.ram[input_addresses[2]], self.dual_port_ram.ram[input_addresses[3]]]
 
     def driver(self, user_input : list[complex]):
-        data_fixedpoint = self.complex_to_verilog_bits(user_input)
+        data_fixedpoint = utils.Fixedpoint.complex_to_verilog_bits(user_input)
         self.selector.fill_input_data(data_fixedpoint, self.dual_port_ram.ram, self.address_generator.generate_input_addresses(self.state))
         self.dual_port_ram.dump()
+
         # self.fill_user_input(user_input)
         # self.data_to_ram()
         # input_addresses = self.address_generator.generate_input_addresses()

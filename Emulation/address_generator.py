@@ -20,3 +20,6 @@ class AddressGenerator:
     # Right now I do realization with one step. In it we don't need to add new addresses with s rule.
     def generate_input_addresses(self, state):
         return [0, 1, 2, 3]
+
+    def generate_addresses_for_fft_input(self, state):
+        return [0, 2, 1, 3]

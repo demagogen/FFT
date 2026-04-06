@@ -1,13 +1,15 @@
 class FFT4:
-    def __init__(self, polynomial: list[complex]):
-        self.SIZE                  = 4
-        self.polynomial            = [0j] * 4
-        self.polynomial            = polynomial
-        self.partition_polynomial1 = [0j] * 2
-        self.partition_polynomial2 = [0j] * 2
-        self.partition_vector1     = [0j] * 2
-        self.partition_vector2     = [0j] * 2
-        self.result_vector         = [0j] * 4
+    def __init__(self, polynomial=None):
+
+        # Constants
+        self.RAM_INPUT_BUS_WIDTH                = 16 * 8
+        self.LUT_WITH_TWIDDLE_FACTORS_BUS_WIDTH = 16 * 2
+        self.OUTPUT_BUS_WIDTH                   = 16 * 8
+
+        # Wires and busses
+        self.ram_input                = [0] * self.RAM_INPUT_BUS_WIDTH
+        self.lut_with_twiddle_factors = [0] * self.LUT_WITH_TWIDDLE_FACTORS_BUS_WIDTH
+        self.output                   = [0] * self.OUTPUT_BUS_WIDTH
 
     def __repr__(self):
         return f"FFT4(polynomial='{self.polynomial}', size={self.SIZE})"
@@ -35,5 +37,8 @@ class FFT4:
         self.split()
         self.dft()
         return self.synchronize()
+
+    def fft_driver(self, coefficients_from_ram : list, twiddle_factor1 : complex, twiddle_factor2 : complex):
+
 
     # def fft_count_iteration(self, ):
