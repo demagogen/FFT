@@ -28,15 +28,18 @@ class FFT4:
     def synchronize(self):
         w40 = complex( 1,  0)
         w41 = complex( 0,  1)
-        w42 = complex(-1,  0)
-        w43 = complex( 0, -1)
+        # w42 = complex(-1,  0)
+        # w43 = complex( 0, -1)
         self.result_vector[0] = self.partition_vector1[0] + w40 * self.partition_vector2[0]
-        self.result_vector[1] = self.partition_vector1[1] + w41 * self.partition_vector2[1]
-        self.result_vector[2] = self.partition_vector1[0] - w42 * self.partition_vector2[0]
-        self.result_vector[3] = self.partition_vector1[1] - w43 * self.partition_vector2[1]
+        self.result_vector[3] = self.partition_vector1[1] + w41 * self.partition_vector2[1]
+        self.result_vector[2] = self.partition_vector1[0] - w40 * self.partition_vector2[0]
+        self.result_vector[1] = self.partition_vector1[1] - w41 * self.partition_vector2[1]
         return self.result_vector
 
     def count(self):
         self.split()
         self.DFT()
         return self.synchronize()
+
+    # def clean_complex(self):
+        # return [(round(self.result_vector.real, 2), round(self.result_vector.imag, 2)) for complex in self.result_vector] # TODO magic number
