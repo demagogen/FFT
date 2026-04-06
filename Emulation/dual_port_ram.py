@@ -9,6 +9,7 @@ class DualPortRAM:
         self.RAM_CAPACITY            = 8 * 16
         self.RAM_STRINGS             = 4
         self.RAM_COLUMNS             = 32
+        self.COEFFICIENT_WIDTH       = 32
 
         # Wires and buses
         self.write_data    = [0] * self.WRITE_DATA_BUS_WIDTH
@@ -18,7 +19,7 @@ class DualPortRAM:
         self.read_data     = [0] * self.READ_DATA_BUS_WIDTH
 
         # RAM
-        self.ram = [0] * 1024
+        self.ram = [0] * self.COEFFICIENT_WIDTH * 4
 
     def dump(self):
         for strings in range(0, self.RAM_STRINGS):
