@@ -102,7 +102,10 @@ class Fixedpoint:
             flat_list.extend(chunk)
         return flat_list
 
-
+    @staticmethod
+    def float_to_fixed(value: float, fractional_bits: int = 10) -> int:
+        scaled = int(round(value * (2 ** fractional_bits)))
+        return scaled & 0xFFFF
 
 class Dumps:
     def print_fixedpoint32(fixedpoint_list):

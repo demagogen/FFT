@@ -76,8 +76,8 @@ class FFTAccelerator:
         return coefficient0 + coefficient1 + coefficient2 + coefficient3
         # return [self.dual_port_ram.ram[input_addresses[0]], self.dual_port_ram.ram[input_addresses[1]], self.dual_port_ram.ram[input_addresses[2]], self.dual_port_ram.ram[input_addresses[3]]]
 
-    def driver(self, user_input : list[complex]):
-        data_fixedpoint = utils.Fixedpoint.complex_to_verilog_bits(user_input)
+    def driver(self, data_fixedpoint : list[complex]):
+        # data_fixedpoint = utils.Fixedpoint.complex_to_verilog_bits(user_input)
         self.selector.fill_input_data(data_fixedpoint, self.dual_port_ram.ram, self.address_generator.generate_input_addresses(self.state))
         addresses = self.address_generator.generate_addresses_for_fft_input()
         coefficients = self.generate_coefficients_list(addresses)
@@ -87,21 +87,37 @@ class FFTAccelerator:
         fft_result = my_fft.fft_driver(coefficients, twiddle_factor1, twiddle_factor2)
         return fft_result
 
-def fft_accelerator_test():
+def fft_accelerator_int_test():
     fft = FFTAccelerator()
     for coeff0 in range(0, 10):
         for coeff1 in range(0, 10):
             for coeff2 in range(0, 10):
                 for coeff3 in range(0, 10):
-                    fft_result = fft.driver([coeff0, coeff1, coeff2, coeff3])
+                    fixedpoint_coeffs = utils.Fixedpoint.complex_to_verilog_bits([coeff0, coeff1, coeff2, coeff3])
+                    fft_result = fft.driver(fixedpoint_coeffs)
                     fft_result_python_complex = utils.Fixedpoint.nested_bits_to_complex(fft_result)
                     expected = numpy.fft.fft([coeff0, coeff1, coeff2, coeff3])
                     if numpy.allclose(fft_result_python_complex, expected, atol=0.1):
-                        print("True: ", [coeff0, coeff1, coeff2, coeff3], " -> ", fft_result_python_complex)
+                        print("True: ", [coeff0, coeff1, coeff2, coeff3], ", numpy: " , expected, ", fft: ", fft_result_python_complex,)
                     else:
-                        print("False: ", [coeff0, coeff1, coeff2, coeff3], " :--: numpy: ", expected, " :--: fft: ", fft_result_python_complex)
+                        print("False: ", [coeff0, coeff1, coeff2, coeff3], ", numpy: ", expected, ", fft: ", fft_result_python_complex)
                         return
 
+def fft_accelerator_float_test():
+    fft = FFTAccelerator()
+    for coeff0 in numpy.arange(0.0, 1.1, 0.1):
+        for coeff1 in numpy.arange(0.0, 1.1, 0.1):
+            for coeff2 in numpy.arange(0.0, 1.1, 0.1):
+                for coeff3 in numpy.arange(0.0, 1.1, 0.1):
+                    fixedpoint_coeffs = utils.Fixedpoint.complex_to_verilog_bits([coeff0, coeff1, coeff2, coeff3])
+                    fft_result = fft.driver(fixedpoint_coeffs)
+                    fft_result_python_complex = utils.Fixedpoint.nested_bits_to_complex(fft_result)
+                    expected = numpy.fft.fft([coeff0, coeff1, coeff2, coeff3])
+                    if numpy.allclose(fft_result_python_complex, expected, atol=0.1):
+                        print("True: ", [coeff0, coeff1, coeff2, coeff3], ", numpy: " , expected, ", fft: ", fft_result_python_complex,)
+                    else:
+                        print("False: ", [coeff0, coeff1, coeff2, coeff3], ", numpy: ", expected, ", fft: ", fft_result_python_complex)
+                        return
 
 def main():
     fft_accelerator = FFTAccelerator()
@@ -116,4 +132,5 @@ def main():
         print()
 
 # main()
-fft_accelerator_test()
+# fft_accelerator_int_test()
+fft_accelerator_float_test()
