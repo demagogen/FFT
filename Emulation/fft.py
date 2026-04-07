@@ -1,4 +1,5 @@
 import utils
+import dual_port_ram
 
 class FFT4:
     def __init__(self, polynomial=None):
@@ -59,17 +60,37 @@ class FFT4:
     def fft_driver(self, coefficients_from_ram : list, twiddle_factor1 : list, twiddle_factor2 : list) -> list[complex]:
         # First step
         coefficients = self.set_coefficients(coefficients_from_ram)
+        print("Input:")
+        utils.Dumps.ram_dump(coefficients_from_ram)
+        # utils.Dumps.print_fixedpoint32_list4(utils.Fixedpoint.split_128_to_32(coefficients_from_ram))
+        utils.Dumps.print_nested_bits_as_complex(utils.Fixedpoint.split_128_to_32(coefficients_from_ram))
+
         partition_coefficients1 = [[0] * self.COEFFICIENT_WIDTH] * 2
         partition_coefficients2 = [[0] * self.COEFFICIENT_WIDTH] * 2
+        print("Partitions init")
+        utils.Dumps.print_fixedpoint32_listn(partition_coefficients1, 2)
+        utils.Dumps.print_fixedpoint32_listn(partition_coefficients2, 2)
         partition_coefficients1[0] = utils.Fixedpoint.add_bits_32(coefficients[0], coefficients[1])
         partition_coefficients1[1] = utils.Fixedpoint.sub_bits_32(coefficients[0], coefficients[1])
         partition_coefficients2[0] = utils.Fixedpoint.add_bits_32(coefficients[0], coefficients[1])
         partition_coefficients2[1] = utils.Fixedpoint.sub_bits_32(coefficients[0], coefficients[1])
+        print("First step")
+        utils.Dumps.print_fixedpoint32_listn(partition_coefficients1, 2)
+        utils.Dumps.print_fixedpoint32_listn(partition_coefficients2, 2)
+        print(utils.Fixedpoint.bits_to_complex(partition_coefficients1[0]))
+        print(utils.Fixedpoint.bits_to_complex(partition_coefficients1[1]))
+        print(utils.Fixedpoint.bits_to_complex(partition_coefficients2[0]))
+        print(utils.Fixedpoint.bits_to_complex(partition_coefficients2[1]))
         result_coefficients = [[0] * self.COEFFICIENT_WIDTH] * 4
+        print("Result init")
+        utils.Dumps.print_fixedpoint32_list4(result_coefficients)
         result_coefficients[0] = utils.Fixedpoint.add_bits_32(partition_coefficients1[0], utils.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
         result_coefficients[1] = utils.Fixedpoint.sub_bits_32(partition_coefficients1[0], utils.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
         result_coefficients[2] = utils.Fixedpoint.add_bits_32(partition_coefficients1[1], utils.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
         result_coefficients[3] = utils.Fixedpoint.sub_bits_32(partition_coefficients1[1], utils.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
+        print("result")
+        utils.Dumps.print_fixedpoint32_list4(result_coefficients)
+        # utils.Dumps.print_nested_bits_as_complex(result_coefficients)
         return result_coefficients
 
 

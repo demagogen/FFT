@@ -89,5 +89,67 @@ class Fixedpoint:
                 complex_list.append(Fixedpoint.bits_to_complex(chunk))
         return complex_list
 
-# class Dumps:
-    # print_fixedpoint32(value):
+    def split_128_to_32(bits_128: list[int]) -> list[list[int]]:
+        if len(bits_128) != 128:
+            raise ValueError(f"Expected 128 bits, but have {len(bits_128)}")
+        return [bits_128[i:i + 32] for i in range(0, 128, 32)]
+
+    def join_32_to_128(nested_bits: list[list[int]]) -> list[int]:
+        if len(nested_bits) != 4:
+            raise ValueError("Expected list of four")
+        flat_list = []
+        for chunk in nested_bits:
+            flat_list.extend(chunk)
+        return flat_list
+
+
+
+class Dumps:
+    def print_fixedpoint32(fixedpoint_list):
+        for index in range(0, 32):
+            print(fixedpoint_list[index], end="")
+        print()
+
+    def print_fixedpoint32_list4(fixedpoint_list_list):
+        for string in range(0, 4):
+            print("#", string, ": ", end="")
+            for column in range(0, 32):
+                print(fixedpoint_list_list[string][column], end="")
+            print()
+
+    def print_fixedpoint32_listn(fixedpoint_listn, strings : int):
+        for string in range(0, strings):
+            print("#", string, ": ", end="")
+            for column in range(0, 32):
+                print(fixedpoint_listn[string][column], end="")
+            print()
+
+    def print_fixedpoint32_listn_listm(fixedpoint_listn_listm, strings : int, columns : int):
+        for string in range(0, strings):
+            print("#", string, ": ", end="")
+            for column in range(0, columns):
+                print(fixedpoint_listn_listm[string][column], end="")
+            print()
+
+    def print_list(list, capacity):
+        for index in range(0, capacity):
+            print(list[index], end="")
+        print()
+
+    def ram_dump(ram):
+        for strings in range(0, 4):
+            print("#", strings, ": ", end="")
+            for columns in range(0, 32):
+                print(ram[strings * 32 + columns], end="")
+            print()
+
+    def print_nested_bits_as_complex(nested_list: list[list[int]]):
+        for i, bits in enumerate(nested_list):
+            re_part = bits[:16]
+            im_part = bits[16:32]
+            re_val = int("".join(map(str, re_part)), 2)
+            im_val = int("".join(map(str, im_part)), 2)
+            re_signed = re_val if re_val < 0x8000 else re_val - 0x10000
+            im_signed = im_val if im_val < 0x8000 else im_val - 0x10000
+            c_num = complex(re_signed, im_signed)
+            print(f"Num{i}: {c_num}")

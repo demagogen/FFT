@@ -68,10 +68,10 @@ class FFTAccelerator:
         coefficient2 = [0] * 32
         coefficient3 = [0] * 32
         for index in range(0, 32):
-            coefficient0[index] = self.dual_port_ram.ram[0 * 32 + index]
-            coefficient1[index] = self.dual_port_ram.ram[1 * 32 + index]
-            coefficient2[index] = self.dual_port_ram.ram[2 * 32 + index]
-            coefficient3[index] = self.dual_port_ram.ram[3 * 32 + index]
+            coefficient0[index] = self.dual_port_ram.ram[input_addresses[0] * 32 + index]
+            coefficient1[index] = self.dual_port_ram.ram[input_addresses[1] * 32 + index]
+            coefficient2[index] = self.dual_port_ram.ram[input_addresses[2] * 32 + index]
+            coefficient3[index] = self.dual_port_ram.ram[input_addresses[3] * 32 + index]
         return coefficient0 + coefficient1 + coefficient2 + coefficient3
         # return [self.dual_port_ram.ram[input_addresses[0]], self.dual_port_ram.ram[input_addresses[1]], self.dual_port_ram.ram[input_addresses[2]], self.dual_port_ram.ram[input_addresses[3]]]
 
@@ -79,7 +79,7 @@ class FFTAccelerator:
         data_fixedpoint = utils.Fixedpoint.complex_to_verilog_bits(user_input)
         self.selector.fill_input_data(data_fixedpoint, self.dual_port_ram.ram, self.address_generator.generate_input_addresses(self.state))
         self.dual_port_ram.dump()
-        addresses = self.address_generator.generate_addresses_for_fft_input(0)
+        addresses = self.address_generator.generate_addresses_for_fft_input()
         coefficients = self.generate_coefficients_list(addresses)
         # coefficients_arr = coefficients[0] + coefficients[1] + coefficients[2] + coefficients[3]
         twiddle_factor1 = self.lut_with_twiddle_factors.twiddle_factors()[0]
@@ -100,7 +100,11 @@ def main():
         for column in range(0, 32):
             print(fft_accelerator_result[string][column], end="")
         print()
-        # print("#", coeff, ": ", fft_accelerator_result[coeff])
-    # print(fft_accelerator_result)
+
+    # need result
+    # 0: 10
+    # 1: -2 + 2j
+    # 2: -2
+    # 3: -2 - 2j
 
 main()
