@@ -153,3 +153,15 @@ class Dumps:
             im_signed = im_val if im_val < 0x8000 else im_val - 0x10000
             c_num = complex(re_signed, im_signed)
             print(f"Num{i}: {c_num}")
+
+    def print_as_complex(bits: list[int]):
+        if len(bits) != 32:
+            print(f"Expected 32 bits, has {len(bits)}")
+            return
+        re_bits = bits[:16]
+        im_bits = bits[16:32]
+        re_val = int("".join(map(str, re_bits)), 2)
+        im_val = int("".join(map(str, im_bits)), 2)
+        re_signed = re_val if re_val < 0x8000 else re_val - 0x10000
+        im_signed = im_val if im_val < 0x8000 else im_val - 0x10000
+        print(complex(re_signed, im_signed))
