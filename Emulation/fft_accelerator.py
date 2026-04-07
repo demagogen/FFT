@@ -81,8 +81,6 @@ class FFTAccelerator:
         self.dual_port_ram.dump()
         addresses = self.address_generator.generate_addresses_for_fft_input(0)
         coefficients = self.generate_coefficients_list(addresses)
-        for i in range(0, len(coefficients)):
-            print(coefficients[0])
         # coefficients_arr = coefficients[0] + coefficients[1] + coefficients[2] + coefficients[3]
         twiddle_factor1 = self.lut_with_twiddle_factors.twiddle_factors()[0]
         twiddle_factor2 = self.lut_with_twiddle_factors.twiddle_factors()[1]
@@ -95,7 +93,14 @@ def main():
     fft_accelerator = FFTAccelerator()
     fft_accelerator_result = fft_accelerator.driver([1, 2, 3, 4])
     coeffs = utils.Fixedpoint.nested_bits_to_complex(fft_accelerator_result)
-    print(coeffs)
-    print(fft_accelerator_result)
+    for coeff in range(0, 4):
+        print("#", coeff, ": ", coeffs[coeff])
+    for string in range(0, 4):
+        print("#", string, ": ", end="")
+        for column in range(0, 32):
+            print(fft_accelerator_result[string][column], end="")
+        print()
+        # print("#", coeff, ": ", fft_accelerator_result[coeff])
+    # print(fft_accelerator_result)
 
 main()

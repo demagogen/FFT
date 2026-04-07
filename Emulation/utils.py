@@ -88,3 +88,6 @@ class Fixedpoint:
             if len(chunk) == 32:
                 complex_list.append(Fixedpoint.bits_to_complex(chunk))
         return complex_list
+
+# class Dumps:
+    # print_fixedpoint32(value):
