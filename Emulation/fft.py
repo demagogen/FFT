@@ -18,30 +18,6 @@ class FFT4:
     def __repr__(self):
         return f"FFT4(polynomial='{self.polynomial}', size={self.SIZE})"
 
-    # def split(self):
-        # self.partition_polynomial1 = [self.polynomial[0], self.polynomial[2]]
-        # self.partition_polynomial2 = [self.polynomial[1], self.polynomial[3]]
-#
-    # def dft(self):
-        # self.partition_vector1[0] = self.partition_polynomial1[0] + self.partition_polynomial1[1] # 0
-        # self.partition_vector1[1] = self.partition_polynomial1[0] - self.partition_polynomial1[1] # 2
-        # self.partition_vector2[0] = self.partition_polynomial2[0] + self.partition_polynomial2[1] # 1
-        # self.partition_vector2[1] = self.partition_polynomial2[0] - self.partition_polynomial2[1] # 3
-#
-    # def synchronize(self):
-        # w40 = complex( 1,  0)
-        # w41 = complex( 0,  1)
-        # self.result_vector[0] = self.partition_vector1[0] + w40 * self.partition_vector2[0]
-        # self.result_vector[3] = self.partition_vector1[1] + w41 * self.partition_vector2[1]
-        # self.result_vector[2] = self.partition_vector1[0] - w40 * self.partition_vector2[0]
-        # self.result_vector[1] = self.partition_vector1[1] - w41 * self.partition_vector2[1]
-        # return self.result_vector
-
-    # def count(self):
-        # self.split()
-        # self.dft()
-        # return self.synchronize()
-
     def set_coefficients(self, coefficients_from_ram : list) -> list[list[int]]:
         coefficient0 = [0] * self.COEFFICIENT_WIDTH
         coefficient1 = [0] * self.COEFFICIENT_WIDTH
@@ -57,18 +33,18 @@ class FFT4:
         return [coefficient0, coefficient1, coefficient2, coefficient3]
 
     def fft_driver(self, coefficients_from_ram : list, twiddle_factor1 : list, twiddle_factor2 : list) -> list[complex]:
-        coefficients = self.set_coefficients(coefficients_from_ram)
-        partition_coefficients1 = [[0] * self.COEFFICIENT_WIDTH] * 2
-        partition_coefficients2 = [[0] * self.COEFFICIENT_WIDTH] * 2
+        coefficients               = self.set_coefficients(coefficients_from_ram)
+        partition_coefficients1    = [[0] * self.COEFFICIENT_WIDTH] * 2
+        partition_coefficients2    = [[0] * self.COEFFICIENT_WIDTH] * 2
         partition_coefficients1[0] = utils.Fixedpoint.add_bits_32(coefficients[0], coefficients[1])
         partition_coefficients1[1] = utils.Fixedpoint.sub_bits_32(coefficients[0], coefficients[1])
         partition_coefficients2[0] = utils.Fixedpoint.add_bits_32(coefficients[2], coefficients[3])
         partition_coefficients2[1] = utils.Fixedpoint.sub_bits_32(coefficients[2], coefficients[3])
-        result_coefficients = [[0] * self.COEFFICIENT_WIDTH] * 4
-        result_coefficients[0] = utils.Fixedpoint.add_bits_32(partition_coefficients1[0], utils.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
-        result_coefficients[1] = utils.Fixedpoint.add_bits_32(partition_coefficients1[1], utils.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
-        result_coefficients[2] = utils.Fixedpoint.sub_bits_32(partition_coefficients1[0], utils.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
-        result_coefficients[3] = utils.Fixedpoint.sub_bits_32(partition_coefficients1[1], utils.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
+        result_coefficients        = [[0] * self.COEFFICIENT_WIDTH] * 4
+        result_coefficients[0]     = utils.Fixedpoint.add_bits_32(partition_coefficients1[0], utils.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
+        result_coefficients[1]     = utils.Fixedpoint.add_bits_32(partition_coefficients1[1], utils.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
+        result_coefficients[2]     = utils.Fixedpoint.sub_bits_32(partition_coefficients1[0], utils.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
+        result_coefficients[3]     = utils.Fixedpoint.sub_bits_32(partition_coefficients1[1], utils.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
         return result_coefficients
 
 
