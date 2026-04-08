@@ -1,4 +1,4 @@
-import utils
+from Fixedpoint import utils
 
 class LUTWithTwiddleFactors:
     def __init__(self):

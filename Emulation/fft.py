@@ -1,4 +1,4 @@
-import utils
+from Fixedpoint import utils
 import dual_port_ram
 
 class FFT4:

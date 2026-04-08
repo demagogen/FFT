@@ -7,7 +7,7 @@ import lut_with_twiddle_factors
 import scale
 import rom
 import one_depth_buffer
-import utils
+from Fixedpoint import utils
 import numpy
 
 class FFTAccelerator:
