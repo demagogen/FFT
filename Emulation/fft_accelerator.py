@@ -132,5 +132,5 @@ def main():
         print()
 
 # main()
-# fft_accelerator_int_test()
-fft_accelerator_float_test()
+fft_accelerator_int_test()
+# fft_accelerator_float_test()

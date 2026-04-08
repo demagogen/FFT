@@ -1,17 +1,35 @@
 class Fixedpoint:
-    @staticmethod
-    def to_signed(value: int) -> int:
-        value &= 0xFFFF
-        return value if value < 0x8000 else value - 0x10000
+    TOTAL_BITS = 16
+    FRAC_BITS = 10
+    MASK = (1 << TOTAL_BITS) - 1
+    OFFSET = 1 << (TOTAL_BITS - 1)
+
+    @classmethod
+    def to_fixed(cls, value: float | int) -> int:
+        if isinstance(value, float):
+            return int(round(value * (1 << cls.FRAC_BITS))) & cls.MASK
+        return int(value) & cls.MASK
+
+    @classmethod
+    def to_signed(cls, value: int) -> int:
+        value &= cls.MASK
+        return value if value < cls.OFFSET else value - (1 << cls.TOTAL_BITS)
 
     @staticmethod
-    def make_verilog_complex(real: int, imag: int) -> list[int]:
-        bits_re = [int(b) for b in f"{int(real) & 0xFFFF:016b}"]
-        bits_im = [int(b) for b in f"{int(imag) & 0xFFFF:016b}"]
-        return bits_re + bits_im
+    def _to_bits(value: int) -> list[int]:
+        return [int(b) for b in f"{int(value) & 0xFFFF:016b}"]
 
     @staticmethod
-    def complex_to_32bit_list(re: int, im: int) -> list[int]:
+    def make_verilog_complex(real: float | int, imag: float | int) -> list[int]:
+        return Fixedpoint._to_bits(Fixedpoint.to_fixed(real)) + \
+               Fixedpoint._to_bits(Fixedpoint.to_fixed(imag))
+
+    @staticmethod
+    def make_verilog_complex_raw(real_int: int, imag_int: int) -> list[int]:
+        return Fixedpoint._to_bits(real_int) + Fixedpoint._to_bits(imag_int)
+
+    @staticmethod
+    def complex_to_32bit_list(re: float | int, im: float | int) -> list[int]:
         return Fixedpoint.make_verilog_complex(re, im)
 
     @staticmethod
@@ -25,52 +43,9 @@ class Fixedpoint:
     def bits_to_complex(bit_array: list[int]) -> complex:
         if len(bit_array) != 32:
             raise ValueError("Expected 32 bits")
-
-        re_str = "".join(map(str, bit_array[:16]))
-        im_str = "".join(map(str, bit_array[16:32]))
-
-        re_val = Fixedpoint.to_signed(int(re_str, 2))
-        im_val = Fixedpoint.to_signed(int(im_str, 2))
+        re_val = Fixedpoint.to_signed(int("".join(map(str, bit_array[:16])), 2))
+        im_val = Fixedpoint.to_signed(int("".join(map(str, bit_array[16:32])), 2))
         return complex(re_val, im_val)
-
-    @staticmethod
-    def verilog_style_add(v1: complex, v2: complex) -> complex:
-        re = (int(v1.real) + int(v2.real)) & 0xFFFF
-        im = (int(v1.imag) + int(v2.imag)) & 0xFFFF
-        return complex(Fixedpoint.to_signed(re), Fixedpoint.to_signed(im))
-
-    @staticmethod
-    def verilog_style_sub(v1: complex, v2: complex) -> complex:
-        re = (int(v1.real) - int(v2.real)) & 0xFFFF
-        im = (int(v1.imag) - int(v2.imag)) & 0xFFFF
-        return complex(Fixedpoint.to_signed(re), Fixedpoint.to_signed(im))
-
-    @staticmethod
-    def verilog_style_mult(v1: complex, v2: complex) -> complex:
-        re = (int(v1.real) * int(v2.real)) - (int(v1.imag) * int(v2.imag))
-        im = (int(v1.real) * int(v2.imag)) + (int(v1.imag) * int(v2.real))
-        return complex(Fixedpoint.to_signed(re & 0xFFFF), Fixedpoint.to_signed(im & 0xFFFF))
-
-    @staticmethod
-    def add_bits_32(bits1: list[int], bits2: list[int]) -> list[int]:
-        c1 = Fixedpoint.bits_to_complex(bits1)
-        c2 = Fixedpoint.bits_to_complex(bits2)
-        res = Fixedpoint.verilog_style_add(c1, c2)
-        return Fixedpoint.make_verilog_complex(res.real, res.imag)
-
-    @staticmethod
-    def sub_bits_32(bits1: list[int], bits2: list[int]) -> list[int]:
-        c1 = Fixedpoint.bits_to_complex(bits1)
-        c2 = Fixedpoint.bits_to_complex(bits2)
-        res = Fixedpoint.verilog_style_sub(c1, c2)
-        return Fixedpoint.make_verilog_complex(res.real, res.imag)
-
-    @staticmethod
-    def mult_bits_32(bits1: list[int], bits2: list[int]) -> list[int]:
-        c1 = Fixedpoint.bits_to_complex(bits1)
-        c2 = Fixedpoint.bits_to_complex(bits2)
-        res = Fixedpoint.verilog_style_mult(c1, c2)
-        return Fixedpoint.make_verilog_complex(res.real, res.imag)
 
     @staticmethod
     def bits_to_complex_list(bit_array: list[int]) -> list[complex]:
@@ -83,17 +58,56 @@ class Fixedpoint:
 
     @staticmethod
     def nested_bits_to_complex(nested_list: list[list[int]]) -> list[complex]:
-        complex_list = []
-        for chunk in nested_list:
-            if len(chunk) == 32:
-                complex_list.append(Fixedpoint.bits_to_complex(chunk))
-        return complex_list
+        return [Fixedpoint.bits_to_complex(chunk) for chunk in nested_list if len(chunk) == 32]
 
+    @classmethod
+    def verilog_style_add(cls, v1: complex, v2: complex) -> complex:
+        re = (int(v1.real) + int(v2.real)) & cls.MASK
+        im = (int(v1.imag) + int(v2.imag)) & cls.MASK
+        return complex(cls.to_signed(re), cls.to_signed(im))
+
+    @classmethod
+    def verilog_style_sub(cls, v1: complex, v2: complex) -> complex:
+        re = (int(v1.real) - int(v2.real)) & cls.MASK
+        im = (int(v1.imag) - int(v2.imag)) & cls.MASK
+        return complex(cls.to_signed(re), cls.to_signed(im))
+
+    @classmethod
+    def verilog_style_mult(cls, v1: complex, v2: complex) -> complex:
+        re_full = (int(v1.real) * int(v2.real)) - (int(v1.imag) * int(v2.imag))
+        im_full = (int(v1.real) * int(v2.imag)) + (int(v1.imag) * int(v2.real))
+        re = (re_full + (1 << (cls.FRAC_BITS - 1))) >> cls.FRAC_BITS
+        im = (im_full + (1 << (cls.FRAC_BITS - 1))) >> cls.FRAC_BITS
+        return complex(cls.to_signed(re & cls.MASK), cls.to_signed(im & cls.MASK))
+
+    @staticmethod
+    def add_bits_32(bits1: list[int], bits2: list[int]) -> list[int]:
+        c1 = Fixedpoint.bits_to_complex(bits1)
+        c2 = Fixedpoint.bits_to_complex(bits2)
+        res = Fixedpoint.verilog_style_add(c1, c2)
+        return Fixedpoint.make_verilog_complex_raw(res.real, res.imag)
+
+    @staticmethod
+    def sub_bits_32(bits1: list[int], bits2: list[int]) -> list[int]:
+        c1 = Fixedpoint.bits_to_complex(bits1)
+        c2 = Fixedpoint.bits_to_complex(bits2)
+        res = Fixedpoint.verilog_style_sub(c1, c2)
+        return Fixedpoint.make_verilog_complex_raw(res.real, res.imag)
+
+    @staticmethod
+    def mult_bits_32(bits1: list[int], bits2: list[int]) -> list[int]:
+        c1 = Fixedpoint.bits_to_complex(bits1)
+        c2 = Fixedpoint.bits_to_complex(bits2)
+        res = Fixedpoint.verilog_style_mult(c1, c2)
+        return Fixedpoint.make_verilog_complex_raw(res.real, res.imag)
+
+    @staticmethod
     def split_128_to_32(bits_128: list[int]) -> list[list[int]]:
         if len(bits_128) != 128:
             raise ValueError(f"Expected 128 bits, but have {len(bits_128)}")
         return [bits_128[i:i + 32] for i in range(0, 128, 32)]
 
+    @staticmethod
     def join_32_to_128(nested_bits: list[list[int]]) -> list[int]:
         if len(nested_bits) != 4:
             raise ValueError("Expected list of four")
@@ -102,10 +116,6 @@ class Fixedpoint:
             flat_list.extend(chunk)
         return flat_list
 
-    @staticmethod
-    def float_to_fixed(value: float, fractional_bits: int = 10) -> int:
-        scaled = int(round(value * (2 ** fractional_bits)))
-        return scaled & 0xFFFF
 
 class Dumps:
     def print_fixedpoint32(fixedpoint_list):
