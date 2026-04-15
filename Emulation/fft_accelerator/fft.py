@@ -1,4 +1,5 @@
 from fixedpoint.dumps import dumps
+from fixedpoint.dumps import Fixedpoint
 from fft_accelerator.dual_port_ram import DualPortRAM
 
 class FFT4:
@@ -35,37 +36,37 @@ class FFT4:
     def fft_driver(self, coefficients_from_ram : list, twiddle_factor1 : list, twiddle_factor2 : list) -> list[complex]:
         print("start fft_driver")
         coefficients               = self.set_coefficients(coefficients_from_ram)
-        dumps.dumps.print_fixedpoint32_list4(coefficients)
+        dumps.print_fixedpoint32_list4(coefficients)
         partition_coefficients1    = [[0] * self.COEFFICIENT_WIDTH] * 2
         partition_coefficients2    = [[0] * self.COEFFICIENT_WIDTH] * 2
-        partition_coefficients1[0] = dumps.Fixedpoint.add_bits_32(coefficients[0], coefficients[1])
-        partition_coefficients1[1] = dumps.Fixedpoint.sub_bits_32(coefficients[0], coefficients[1])
-        partition_coefficients2[0] = dumps.Fixedpoint.add_bits_32(coefficients[2], coefficients[3])
-        partition_coefficients2[1] = dumps.Fixedpoint.sub_bits_32(coefficients[2], coefficients[3])
+        partition_coefficients1[0] = Fixedpoint.add_bits_32(coefficients[0], coefficients[1])
+        partition_coefficients1[1] = Fixedpoint.sub_bits_32(coefficients[0], coefficients[1])
+        partition_coefficients2[0] = Fixedpoint.add_bits_32(coefficients[2], coefficients[3])
+        partition_coefficients2[1] = Fixedpoint.sub_bits_32(coefficients[2], coefficients[3])
 
         print("partition coefficients")
-        dumps.dumps.print_fixedpoint32(partition_coefficients1[0])
-        dumps.dumps.print_fixedpoint32(partition_coefficients1[1])
-        dumps.dumps.print_fixedpoint32(partition_coefficients2[0])
-        dumps.dumps.print_fixedpoint32(partition_coefficients2[1])
+        dumps.print_fixedpoint32(partition_coefficients1[0])
+        dumps.print_fixedpoint32(partition_coefficients1[1])
+        dumps.print_fixedpoint32(partition_coefficients2[0])
+        dumps.print_fixedpoint32(partition_coefficients2[1])
         print("as complex")
-        dumps.dumps.print_as_complex(partition_coefficients1[0])
-        dumps.dumps.print_as_complex(partition_coefficients1[1])
-        dumps.dumps.print_as_complex(partition_coefficients2[0])
-        dumps.dumps.print_as_complex(partition_coefficients2[1])
+        dumps.print_as_complex(partition_coefficients1[0])
+        dumps.print_as_complex(partition_coefficients1[1])
+        dumps.print_as_complex(partition_coefficients2[0])
+        dumps.print_as_complex(partition_coefficients2[1])
 
         result_coefficients        = [[0] * self.COEFFICIENT_WIDTH] * 4
-        result_coefficients[0]     = dumps.Fixedpoint.add_bits_32(partition_coefficients1[0], dumps.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
-        result_coefficients[1]     = dumps.Fixedpoint.add_bits_32(partition_coefficients1[1], dumps.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
-        result_coefficients[2]     = dumps.Fixedpoint.sub_bits_32(partition_coefficients1[0], dumps.Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
-        result_coefficients[3]     = dumps.Fixedpoint.sub_bits_32(partition_coefficients1[1], dumps.Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
+        result_coefficients[0]     = Fixedpoint.add_bits_32(partition_coefficients1[0], Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
+        result_coefficients[1]     = Fixedpoint.add_bits_32(partition_coefficients1[1], Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
+        result_coefficients[2]     = Fixedpoint.sub_bits_32(partition_coefficients1[0], Fixedpoint.mult_bits_32(partition_coefficients2[0], twiddle_factor1))
+        result_coefficients[3]     = Fixedpoint.sub_bits_32(partition_coefficients1[1], Fixedpoint.mult_bits_32(partition_coefficients2[1], twiddle_factor2))
 
         print("result")
-        dumps.dumps.print_fixedpoint32_list4(result_coefficients)
-        dumps.dumps.print_as_complex(result_coefficients[0])
-        dumps.dumps.print_as_complex(result_coefficients[1])
-        dumps.dumps.print_as_complex(result_coefficients[2])
-        dumps.dumps.print_as_complex(result_coefficients[3])
+        dumps.print_fixedpoint32_list4(result_coefficients)
+        dumps.print_as_complex(result_coefficients[0])
+        dumps.print_as_complex(result_coefficients[1])
+        dumps.print_as_complex(result_coefficients[2])
+        dumps.print_as_complex(result_coefficients[3])
 
         print("Twiddle factors")
         print(twiddle_factor1)
