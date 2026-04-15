@@ -117,7 +117,14 @@ class Fixedpoint:
         return flat_list
 
 
-class Dumps:
+class dumps:
+    def print_fixedpoint32_nested_bytes_list4(fixedpoint_list4):
+        for index in range(0, 4):
+            print("#", index, ": ", end="")
+            for columns in range(0, 32):
+                print(fixedpoint_list4[index * 32 + columns], end="")
+            print()
+
     def print_fixedpoint32(fixedpoint_list):
         for index in range(0, 32):
             print(fixedpoint_list[index], end="")
