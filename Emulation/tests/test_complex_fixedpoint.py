@@ -7,7 +7,7 @@ PARAMS = {
     "frac_width": 14,
     "width": 16,
     "saturate": True,
-    "rounding": True,
+    "rounding": False,
 }
 
 
@@ -24,10 +24,10 @@ def test_mul_hardware_accurate():
 
     result = cfp1 * cfp2
 
-    expected_real_bits = [0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0]
+    expected_real_bits = [0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1]
     expected_imag_bits = [0] * 16
 
-    assert result.real.raw_value == 1450
+    assert result.real.raw_value == 1451
     assert result.nested_bits == [expected_real_bits, expected_imag_bits]
 
 

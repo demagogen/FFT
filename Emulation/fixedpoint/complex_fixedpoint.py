@@ -38,6 +38,7 @@ class ComplexFixedpoint:
         return self._create_from_objects(self.real - cfp.real, self.imag - cfp.imag)
 
     def __mul__(self, cfp):
+
         res_real = (self.real * cfp.real) - (self.imag * cfp.imag)
         res_imag = (self.real * cfp.imag) + (self.imag * cfp.real)
         return self._create_from_objects(res_real, res_imag)
@@ -51,4 +52,4 @@ class ComplexFixedpoint:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return f"ComplexFixedpoint({self.real}, {self.imag})"
+        return f"ComplexFixedpoint({self .real }, {self .imag })"

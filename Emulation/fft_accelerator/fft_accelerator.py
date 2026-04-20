@@ -14,38 +14,32 @@ from fixedpoint.dumps import dumps
 
 
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
-# from fixedpoint.dumps import Fixedpoint
 
 
 class FFTAccelerator:
     def __init__(self):
 
-        # Metal Constants
-        self.INPUT_DATA_BUS_WIDTH = 16 * 8  # TODO add polymorphism for blocks
-        self.OUTPUT_DATA_BUS_WIDTH = 16 * 8  # In every iteration FFT may increase bits
+        self.INPUT_DATA_BUS_WIDTH = 16 * 8
+        self.OUTPUT_DATA_BUS_WIDTH = 16 * 8
         self.EXCEPTIONS_BUS_WIDTH = 4
 
-        # User constants
         self.COEFFICIENTS_AMOUNT = 4
 
-        # Inputs
-        self.input_data = [0] * self.INPUT_DATA_BUS_WIDTH  # Bit reversed!
+        self.input_data = [0] * self.INPUT_DATA_BUS_WIDTH
         self.s_axis_user = 0
         self.s_axis_valid = 0
         self.s_axis_ready = 0
         self.s_axis_last = [0] * self.EXCEPTIONS_BUS_WIDTH
 
-        # Outputs
         self.output_data = [0] * self.OUTPUT_DATA_BUS_WIDTH
         self.m_axis_valid = 0
         self.m_axis_last = 0
         self.m_axis_ready = 0
         self.m_axis_user = 0
 
-        # Blocks
         self.selector = Selector()
         self.dual_port_ram = DualPortRAM()
-        # self.fft                      = fft.FFT4()
+
         self.address_generator = AddressGenerator()
         self.control_block = ControlBlock()
         self.lut_with_twiddle_factors = LUTWithTwiddleFactors()
@@ -53,10 +47,8 @@ class FFTAccelerator:
         self.rom = ROM()
         self.one_depth_buffer = OneDepthBuffer()
 
-        # User API
         self.data = [0] * self.COEFFICIENTS_AMOUNT
 
-        # Guts
         self.state = 0
 
     def data_to_ram(self):
@@ -70,28 +62,20 @@ class FFTAccelerator:
             print("Incorrect amount of users coefficients")
         self.data = input
 
-    def take_coeffs(self, addresses : list[int], ram : list[list[int]]) -> list[list[int]]:
+    def take_coeffs(
+        self, addresses: list[int], ram: list[list[int]]
+    ) -> list[list[int]]:
         coeff0 = ram[addresses[0]]
         coeff1 = ram[addresses[1]]
         coeff2 = ram[addresses[2]]
         coeff3 = ram[addresses[3]]
         return [coeff0, coeff1, coeff2, coeff3]
 
-    def driver(self, cfp_list : list[ComplexFixedpoint]):
-        # print(cfp_bits)
+    def driver(self, cfp_list: list[ComplexFixedpoint]):
+
         stage = 1
-        self.selector.data_to_ram(
-            cfp_list,
-            self.dual_port_ram.ram
-        )
-        addresses = self.address_generator.generate_addresses_for_fft_input()
-        # coefficients = self.generate_coefficients_list(addresses)
-        coeffs = self.take_coeffs(addresses, self.dual_port_ram.ram)
+
         twiddle_factors = self.lut_with_twiddle_factors.twiddle_factors(stage)
         my_fft = FFT4()
-        fft_result = my_fft.fft_driver(coeffs, twiddle_factors)
+        fft_result = my_fft.fft_driver(cfp_list, twiddle_factors)
         return fft_result
-
-
-# res = FFTAccelerator()
-# result = res.driver([1, 2, 3, 4])

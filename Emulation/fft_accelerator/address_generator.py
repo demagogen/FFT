@@ -1,13 +1,11 @@
 class AddressGenerator:
     def __init__(self):
 
-        # Constants
         self.SELECTOR_BUS_WIDTH = 8
         self.WRITE_ADDRESS_BUS_WIDTH = 10
         self.READ_ADDRESS_BUS_WIDTH = 10
         self.CONTROL_BLOCK_BUS_WIDTH = 20
 
-        # Wires and busses
         self.start = 0
         self.busy = 0
         self.selector = [0] * self.SELECTOR_BUS_WIDTH
@@ -17,7 +15,6 @@ class AddressGenerator:
         self.lut_twiddle_factors = 0
         self.from_control_block = [0] * self.CONTROL_BLOCK_BUS_WIDTH
 
-    # Right now I do realization with one step. In it we don't need to add new addresses with s rule.
     def generate_input_addresses(self, state=None):
         return [0, 1, 2, 3]
 

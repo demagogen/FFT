@@ -17,7 +17,7 @@ class Fixedpoint:
 
     @staticmethod
     def _to_bits(value: int) -> list[int]:
-        return [int(b) for b in f"{int(value) & 0xFFFF:016b}"]
+        return [int(b) for b in f"{int (value )&0xFFFF :016b}"]
 
     @staticmethod
     def make_verilog_complex(real: float | int, imag: float | int) -> list[int]:
@@ -109,7 +109,7 @@ class Fixedpoint:
     @staticmethod
     def split_128_to_32(bits_128: list[int]) -> list[list[int]]:
         if len(bits_128) != 128:
-            raise ValueError(f"Expected 128 bits, but have {len(bits_128)}")
+            raise ValueError(f"Expected 128 bits, but have {len (bits_128 )}")
         return [bits_128[i : i + 32] for i in range(0, 128, 32)]
 
     @staticmethod
@@ -179,11 +179,11 @@ class dumps:
             re_signed = re_val if re_val < 0x8000 else re_val - 0x10000
             im_signed = im_val if im_val < 0x8000 else im_val - 0x10000
             c_num = complex(re_signed, im_signed)
-            print(f"Num{i}: {c_num}")
+            print(f"Num{i }: {c_num }")
 
     def print_as_complex(bits: list[int]):
         if len(bits) != 32:
-            print(f"Expected 32 bits, has {len(bits)}")
+            print(f"Expected 32 bits, has {len (bits )}")
             return
         re_bits = bits[:16]
         im_bits = bits[16:32]
