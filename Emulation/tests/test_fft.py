@@ -2,7 +2,6 @@ import numpy
 import pytest
 
 from fft_accelerator.fft_accelerator import FFTAccelerator
-from fixedpoint.dumps import dumps
 from fixedpoint.fixedpoint import Fixedpoint
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 

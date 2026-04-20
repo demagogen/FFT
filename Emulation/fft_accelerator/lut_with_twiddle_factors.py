@@ -1,6 +1,5 @@
 import numpy
 
-from fixedpoint import dumps
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 
 PARAMS = {

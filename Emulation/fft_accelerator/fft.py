@@ -1,5 +1,4 @@
-from fixedpoint.dumps import dumps
-from fixedpoint.dumps import Fixedpoint
+from fixedpoint.fixedpoint import Fixedpoint
 from fft_accelerator.dual_port_ram import DualPortRAM
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 

@@ -10,7 +10,6 @@ from fft_accelerator.lut_with_twiddle_factors import LUTWithTwiddleFactors
 from fft_accelerator.scale import Scale
 from fft_accelerator.rom import ROM
 from fft_accelerator.one_depth_buffer import OneDepthBuffer
-from fixedpoint.dumps import dumps
 
 
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
