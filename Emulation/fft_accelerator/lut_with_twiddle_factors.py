@@ -33,4 +33,9 @@ class LUTWithTwiddleFactors:
         for index in range(0, stage + 1):
             tf_fp = self.twiddle_factor(index, stage)
             tf_fp_list.append(tf_fp)
+
+        for index in range(0, (stage * 4 + 1) // 2):
+            tf_fp_extra = self.twiddle_factor(index, stage)
+            tf_fp_list.append(tf_fp_extra)
+
         return tf_fp_list
