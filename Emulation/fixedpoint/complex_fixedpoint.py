@@ -1,48 +1,54 @@
 from fixedpoint.fixedpoint import Fixedpoint
-from fixedpoint.validator import validate
+
 
 class ComplexFixedpoint:
-    @validate
-    def __init__(self, c_value: complex, with_sign: int, int_width: int, width: int):
+    def __init__(
+        self, c_value, with_sign, frac_width, width, saturate=True, rounding=True
+    ):
         self.with_sign = with_sign
-        self.int_width = int_width
+        self.frac_width = frac_width
         self.width = width
-        self.real = Fixedpoint(c_value.real, with_sign, int_width, width)
-        self.imag = Fixedpoint(c_value.imag, with_sign, int_width, width)
+        self.saturate = saturate
+        self.rounding = rounding
 
-    @classmethod
-    @validate
-    def from_raw_bits(cls, bits: list[int], with_sign: int, int_width: int, width: int):
-        if len(bits) != width * 2:
-            raise ValueError(f"Expected {width * 2} bits, got {len(bits)}")
+        self.real = Fixedpoint(
+            c_value.real, with_sign, frac_width, width, saturate, rounding
+        )
+        self.imag = Fixedpoint(
+            c_value.imag, with_sign, frac_width, width, saturate, rounding
+        )
+        self.nested_bits = [self.real.nested_bits, self.imag.nested_bits]
 
-        re_raw_val = int("".join(map(str, bits[:width])), 2)
-        im_raw_val = int("".join(map(str, bits[width:])), 2)
+    def _create_from_objects(self, real_obj, imag_obj):
+        obj = self.__class__.__new__(self.__class__)
+        obj.with_sign = self.with_sign
+        obj.frac_width = self.frac_width
+        obj.width = self.width
+        obj.saturate = self.saturate
+        obj.rounding = self.rounding
+        obj.real = real_obj
+        obj.imag = imag_obj
+        obj.nested_bits = [obj.real.nested_bits, obj.imag.nested_bits]
+        return obj
 
-        def sign_extend(val, w):
-            if not with_sign: return val
-            return val if val < (1 << (w - 1)) else val - (1 << w)
+    def __add__(self, cfp):
+        return self._create_from_objects(self.real + cfp.real, self.imag + cfp.imag)
 
-        instance = cls(0j, with_sign, int_width, width)
-        instance.real.raw_int = sign_extend(re_raw_val, width)
-        instance.imag.raw_int = sign_extend(im_raw_val, width)
-        return instance
+    def __sub__(self, cfp):
+        return self._create_from_objects(self.real - cfp.real, self.imag - cfp.imag)
 
-    def to_complex(self) -> complex:
-        return complex(self.real.to_float(), self.imag.to_float())
+    def __mul__(self, cfp):
+        res_real = (self.real * cfp.real) - (self.imag * cfp.imag)
+        res_imag = (self.real * cfp.imag) + (self.imag * cfp.real)
+        return self._create_from_objects(res_real, res_imag)
 
-    @property
-    def bits(self) -> list[int]:
-        return self.real.bits + self.imag.bits
+    def __eq__(self, other):
+        if not isinstance(other, ComplexFixedpoint):
+            return False
+        return self.real == other.real and self.imag == other.imag
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __repr__(self):
-        return f"ComplexFixedpoint(value={self.to_complex()}, width={self.width}x2)"
-
-    def __add__(self, other):
-        return ComplexFixedpoint(self.to_complex() + other.to_complex(), self.with_sign, self.int_width, self.width)
-
-    def __sub__(self, other):
-        return ComplexFixedpoint(self.to_complex() - other.to_complex(), self.with_sign, self.int_width, self.width)
-
-    def __mul__(self, other):
-        return ComplexFixedpoint(self.to_complex() * other.to_complex(), self.with_sign, self.int_width, self.width)
+        return f"ComplexFixedpoint({self.real}, {self.imag})"

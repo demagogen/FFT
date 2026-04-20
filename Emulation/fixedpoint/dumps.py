@@ -21,8 +21,9 @@ class Fixedpoint:
 
     @staticmethod
     def make_verilog_complex(real: float | int, imag: float | int) -> list[int]:
-        return Fixedpoint._to_bits(Fixedpoint.to_fixed(real)) + \
-               Fixedpoint._to_bits(Fixedpoint.to_fixed(imag))
+        return Fixedpoint._to_bits(Fixedpoint.to_fixed(real)) + Fixedpoint._to_bits(
+            Fixedpoint.to_fixed(imag)
+        )
 
     @staticmethod
     def make_verilog_complex_raw(real_int: int, imag_int: int) -> list[int]:
@@ -51,14 +52,18 @@ class Fixedpoint:
     def bits_to_complex_list(bit_array: list[int]) -> list[complex]:
         complex_list = []
         for i in range(0, len(bit_array), 32):
-            chunk = bit_array[i:i + 32]
+            chunk = bit_array[i : i + 32]
             if len(chunk) == 32:
                 complex_list.append(Fixedpoint.bits_to_complex(chunk))
         return complex_list
 
     @staticmethod
     def nested_bits_to_complex(nested_list: list[list[int]]) -> list[complex]:
-        return [Fixedpoint.bits_to_complex(chunk) for chunk in nested_list if len(chunk) == 32]
+        return [
+            Fixedpoint.bits_to_complex(chunk)
+            for chunk in nested_list
+            if len(chunk) == 32
+        ]
 
     @classmethod
     def verilog_style_add(cls, v1: complex, v2: complex) -> complex:
@@ -105,7 +110,7 @@ class Fixedpoint:
     def split_128_to_32(bits_128: list[int]) -> list[list[int]]:
         if len(bits_128) != 128:
             raise ValueError(f"Expected 128 bits, but have {len(bits_128)}")
-        return [bits_128[i:i + 32] for i in range(0, 128, 32)]
+        return [bits_128[i : i + 32] for i in range(0, 128, 32)]
 
     @staticmethod
     def join_32_to_128(nested_bits: list[list[int]]) -> list[int]:
@@ -137,14 +142,16 @@ class dumps:
                 print(fixedpoint_list_list[string][column], end="")
             print()
 
-    def print_fixedpoint32_listn(fixedpoint_listn, strings : int):
+    def print_fixedpoint32_listn(fixedpoint_listn, strings: int):
         for string in range(0, strings):
             print("#", string, ": ", end="")
             for column in range(0, 32):
                 print(fixedpoint_listn[string][column], end="")
             print()
 
-    def print_fixedpoint32_listn_listm(fixedpoint_listn_listm, strings : int, columns : int):
+    def print_fixedpoint32_listn_listm(
+        fixedpoint_listn_listm, strings: int, columns: int
+    ):
         for string in range(0, strings):
             print("#", string, ": ", end="")
             for column in range(0, columns):
