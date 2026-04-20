@@ -1,3 +1,6 @@
+from fixedpoint.complex_fixedpoint import ComplexFixedpoint
+
+
 class Selector:
     def __init__(self):
 
@@ -15,11 +18,6 @@ class Selector:
         self.write_enable = 0
         self.scale = [0] * self.SCALE_BUS_WIDTH
 
-    def fill_input_data(
-        self, input_data: list[complex], ram: list[complex], agu_addresses: list[int]
-    ):
-        if len(input_data) != self.INPUT_BUS_WIDTH:
-            print("Not correct amount of bits for selector input data")
-        else:
-            for index in range(0, len(input_data)):
-                ram[index] = input_data[index]
+    def data_to_ram(self, input_cfp : list[ComplexFixedpoint], ram : list[ComplexFixedpoint]):
+        for index in range(0, len(input_cfp)):
+            ram[index] = input_cfp[index]

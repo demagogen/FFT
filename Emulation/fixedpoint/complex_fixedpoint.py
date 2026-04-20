@@ -17,7 +17,7 @@ class ComplexFixedpoint:
         self.imag = Fixedpoint(
             c_value.imag, with_sign, frac_width, width, saturate, rounding
         )
-        self.nested_bits = [self.real.nested_bits, self.imag.nested_bits]
+        self.nested_bits = self.real.nested_bits + self.imag.nested_bits
 
     def _create_from_objects(self, real_obj, imag_obj):
         obj = self.__class__.__new__(self.__class__)

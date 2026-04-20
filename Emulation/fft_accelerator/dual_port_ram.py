@@ -1,3 +1,5 @@
+from fixedpoint.complex_fixedpoint import ComplexFixedpoint
+
 class DualPortRAM:
     def __init__(self):
 
@@ -19,11 +21,11 @@ class DualPortRAM:
         self.read_data = [0] * self.READ_DATA_BUS_WIDTH
 
         # RAM
-        self.ram = [0] * self.COEFFICIENT_WIDTH * 4
+        self.ram = [ComplexFixedpoint] * 1024
 
-    def dump(self):
-        for strings in range(0, self.RAM_STRINGS):
-            print("#", strings, ": ", end="")
-            for columns in range(0, self.RAM_COLUMNS):
-                print(self.ram[strings * self.RAM_COLUMNS + columns], end="")
-            print()
+    # def dump(self):
+    #     for strings in range(0, self.RAM_STRINGS):
+    #         print("#", strings, ": ", end="")
+    #         for columns in range(0, self.RAM_COLUMNS):
+    #             print(self.ram[strings * self.RAM_COLUMNS + columns], end="")
+    #         print()
