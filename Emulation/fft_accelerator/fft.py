@@ -81,12 +81,23 @@ class FFT4:
 
         # tmp_cfp00 = coeff0 + twiddle_factor1
 
-        print("Huesos ", len(twiddle_factors))
+<<<<<<< HEAD
+        tmp_cfp00 = coeff00 + twiddle_factors[0] * coeff01
+        tmp_cfp01 = coeff00 - twiddle_factors[1] * coeff01
+        tmp_cfp10 = coeff01 + twiddle_factors[0] * coeff11
+        tmp_cfp11 = coeff01 - twiddle_factors[1] * coeff11
+
+        result_cfp0 = tmp_cfp00 + twiddle_factors[2] * tmp_cfp10
+        result_cfp1 = tmp_cfp00 - twiddle_factors[2] * tmp_cfp10
+        result_cfp2 = tmp_cfp01 + twiddle_factors[3] * tmp_cfp11
+        result_cfp3 = tmp_cfp01 - twiddle_factors[3] * tmp_cfp11
+=======
 
         result_cfp0 = coeff00 + twiddle_factors[0] * coeff10
         result_cfp1 = coeff00 - twiddle_factors[0] * coeff10
         result_cfp2 = coeff01 + twiddle_factors[1] * coeff11
         result_cfp3 = coeff01 - twiddle_factors[1] * coeff11
+>>>>>>> parent of d9e5907 (add tests and changed fft)
 
         # result_coefficients = [[0] * self.COEFFICIENT_WIDTH] * 4
         # result_coefficients[0] = Fixedpoint.add_bits_32(
