@@ -1,5 +1,7 @@
 import functools
 
+# from fixedpoint.fixedpoint import Fixedpoint
+
 class Validator:
     @staticmethod
     def width_settings(with_sign: int, frac_width: int, width: int):
@@ -10,7 +12,15 @@ class Validator:
         if width - frac_width - with_sign < 0:
             raise ValueError(f"Constraint failed: {width} - {frac_width} - {with_sign} < 0")
 
-def validate(func):
+    # def same_params(fp1 : Fixedpoint, fp2 : Fixedpoint):
+        # if not fp1.with_sign == fp2.with_sign:
+            # raise ValueError("with_sign not the same")
+        # if not fp1.frac_width == fp2.frac_width:
+            # raise ValueError("frac_width not the same")
+        # if not fp1.width == fp2.width:
+            # raise ValueError("width not the same")
+
+def validate_init(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         import inspect
@@ -28,16 +38,19 @@ def validate(func):
         return func(*args, **kwargs)
     return wrapper
 
-class Fixedpoint:
-    @staticmethod
-    @validate
-    def float_to_fixedpoint(float_value: float, with_sign: int, frac_width: int, width: int):
-        fractional_bits = width - with_sign - frac_width
-        tmp = int(round(float_value * (2 ** fractional_bits)))
-        max_limit = 1 << (width - with_sign)
-        return max(-max_limit, min(max_limit - 1, tmp))
-
-    @staticmethod
-    @validate
-    def some_other_function(with_sign: int, frac_width: int, width: int):
-        return True
+# def validate_same_params(func):
+    # @functools.wraps(func)
+    # def wrapper(*args, **kwargs):
+        # import inspect
+        # sig = inspect.signature(func)
+        # bound_args = sig.bind(*args, **kwargs)
+        # bound_args.apply_defaults()
+#
+        # params = bound_args.arguments
+        # Validator.same_params(
+            # params.get('fp1'),
+            # params.get('fp2')
+        # )
+#
+        # return func(*args, **kwargs)
+    # return wrapper
