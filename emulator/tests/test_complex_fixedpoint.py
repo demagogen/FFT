@@ -1,39 +1,28 @@
 import pytest
 
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
-
-PARAMS = {
-    "with_sign": 1,
-    "frac_width": 14,
-    "width": 16,
-    "saturate": True,
-    "rounding": False,
-}
-
+from tests.params import PARAMS
+from tests.params import PARAMS_SATURATE
+from tests.params import PARAMS_ROUNDING
+from tests.params import PARAMS_SATURATE_ROUNDING
 
 def test_mul_hardware_accurate():
-    params = {
-        "with_sign": 1,
-        "frac_width": 14,
-        "width": 16,
-        "rounding": True,
-        "saturate": True,
-    }
+    params = PARAMS_SATURATE
     cfp1 = ComplexFixedpoint(complex(0, -0.72), **params)
     cfp2 = ComplexFixedpoint(complex(0, 0.123), **params)
 
     result = cfp1 * cfp2
 
-    expected_real_bits = [0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1]
+    expected_real_bits = [0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0]
     expected_imag_bits = [0] * 16
 
-    assert result.real.raw_value == 1451
+    assert result.real.raw_value == 1450
     assert result.nested_bits == [expected_real_bits, expected_imag_bits]
 
 
 def test_saturation_overflow():
-    c1 = ComplexFixedpoint(complex(1.5, 0), **PARAMS)
-    c2 = ComplexFixedpoint(complex(1.5, 0), **PARAMS)
+    c1 = ComplexFixedpoint(complex(1.5, 0), **PARAMS_SATURATE)
+    c2 = ComplexFixedpoint(complex(1.5, 0), **PARAMS_SATURATE)
 
     result = c1 * c2
     assert result.real.raw_value == 32767
@@ -41,8 +30,8 @@ def test_saturation_overflow():
 
 
 def test_saturation_underflow():
-    c1 = ComplexFixedpoint(complex(-1.5, 0), **PARAMS)
-    c2 = ComplexFixedpoint(complex(1.5, 0), **PARAMS)
+    c1 = ComplexFixedpoint(complex(-1.5, 0), **PARAMS_SATURATE)
+    c2 = ComplexFixedpoint(complex(1.5, 0), **PARAMS_SATURATE)
 
     result = c1 * c2
     assert result.real.raw_value == -32768
@@ -50,8 +39,8 @@ def test_saturation_underflow():
 
 
 def test_complex_add_logic():
-    c1 = ComplexFixedpoint(complex(0.5, 0.5), **PARAMS)
-    c2 = ComplexFixedpoint(complex(0.75, -0.25), **PARAMS)
+    c1 = ComplexFixedpoint(complex(0.5, 0.5), **PARAMS_SATURATE)
+    c2 = ComplexFixedpoint(complex(0.75, -0.25), **PARAMS_SATURATE)
 
     result = c1 + c2
     assert result.real.raw_value == 20480
@@ -59,7 +48,7 @@ def test_complex_add_logic():
 
 
 def test_rounding_off():
-    params_no_round = PARAMS.copy()
+    params_no_round = PARAMS_SATURATE.copy()
     params_no_round["rounding"] = False
 
     cfp1 = ComplexFixedpoint(complex(0, -0.72), **params_no_round)
@@ -70,7 +59,7 @@ def test_rounding_off():
 
 
 def test_wrap_around_off():
-    params_wrap = PARAMS.copy()
+    params_wrap = PARAMS_SATURATE.copy()
     params_wrap["saturate"] = False
     params_wrap["rounding"] = False
 
