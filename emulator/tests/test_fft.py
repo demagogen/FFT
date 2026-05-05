@@ -135,7 +135,31 @@ def test_fft_accelerator_radix8(vector):
         im = comp.imag.raw_value / (1 << comp.frac_width)
         actual.append(complex(re, im))
 
-    for i in range(0, 8):
+    # for i in range(0, 8):
+    #     print(actual[i], " -- ", expected[i])
+
+    assert numpy.allclose(actual, expected, atol=0.01)
+
+@pytest.mark.parametrize("vector", test_vector_radix16)
+def test_fft_accelerator_radix16(vector):
+    # fft = FFTAccelerator()
+
+    scaled_vector = vector / 16
+    inputs = [ComplexFixedpoint(v, **PARAMS_SATURATE_ROUNDING) for v in scaled_vector]
+
+    fft = FFT()
+    fft_result = fft.radix8(inputs, (0, 0))
+    # fft_result = fft.driver(inputs)
+
+    expected = numpy.fft.fft(scaled_vector)
+
+    actual = []
+    for comp in fft_result:
+        re = comp.real.raw_value / (1 << comp.frac_width)
+        im = comp.imag.raw_value / (1 << comp.frac_width)
+        actual.append(complex(re, im))
+
+    for i in range(0, 16):
         print(actual[i], " -- ", expected[i])
 
     assert numpy.allclose(actual, expected, atol=0.01)

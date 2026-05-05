@@ -80,7 +80,7 @@ class FFT:
 
         return [result1, r1, result2, r3]
 
-    def radix8(self, coeffs : list[ComplexFixedpoint], twiddle_factors) -> list[ComplexFixedpoint]:
+    def radix8(self, coeffs : list[ComplexFixedpoint], twiddle_factors=None) -> list[ComplexFixedpoint]:
         x0, x1, x2, x3, x4, x5, x6, x7 = coeffs
 
         tmp0, tmp1, tmp2, tmp3 = self.radix4([x0, x2, x4, x6])
@@ -103,5 +103,35 @@ class FFT:
 
         return [result0, result1, result2, result3, result4, result5, result6, result7]
 
+    def radix16(self, coeffs : list[ComplexFixedpoint], twiddle_factors=None) -> list[ComplexFixedpoint]:
+        tmp0 = self.radix8(coeffs[0], coeffs[2], coeffs[4], coeffs[6], coeffs[8], coeffs[10], coeffs[12], coeffs[14])
+        tmp1 = self.radix8(coeffs[1], coeffs[3], coeffs[5], coeffs[7], coeffs[9], coeffs[11], coeffs[13], coeffs[15])
 
+        lut = LUTWithTwiddleFactors()
+        w016 = lut.twiddle_factor(0, 16)
+        w116 = lut.twiddle_factor(1, 16)
+        w216 = lut.twiddle_factor(2, 16)
+        w316 = lut.twiddle_factor(3, 16)
+        w416 = lut.twiddle_factor(4, 16)
+        w516 = lut.twiddle_factor(5, 16)
+        w616 = lut.twiddle_factor(6, 16)
+        w716 = lut.twiddle_factor(7, 16)
 
+        result0 = tmp0[0] + w016 * tmp1[0]
+        result8 = tmp0[0] - w016 * tmp1[0]
+        result1 = tmp0[1] + w116 * tmp1[1]
+        result9 = tmp0[1] - w116 * tmp1[1]
+        result2 = tmp0[2] + w216 * tmp1[2]
+        result10 = tmp0[2] - w216 * tmp1[2]
+        result3 = tmp0[3] + w316 * tmp1[3]
+        result11 = tmp0[3] - w316 * tmp1[3]
+        result4 = tmp0[4] + w416 * tmp1[4]
+        result12 = tmp0[4] - w416 * tmp1[4]
+        result5 = tmp0[5] + w516 * tmp1[5]
+        result13 = tmp0[5] - w516 * tmp1[5]
+        result6 = tmp0[6] + w616 * tmp1[6]
+        result14 = tmp0[6] - w616 * tmp1[6]
+        result7 = tmp0[7] + w716 * tmp1[7]
+        result15 = tmp[7] - w716 * tmp1[7]
+
+        return [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15]
