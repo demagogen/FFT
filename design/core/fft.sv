@@ -1,46 +1,27 @@
-module buffer4
-#(
-    parameter WIDTH = 16,
-    parameter FRAC_WIDTH = 15
-)
+typedef struct packed
+{
+    logic signed [15 : 0] re;
+    logic signed [15 : 0] im;
+} complex_t;
+
+module radix2
 (
-    input clk,
-    input write_en,
-    input [WIDTH - 1 : 0] write_data,
-    input read_ready,
-    output [WIDTH - 1 : 0] read_data,
-    output read_valid
+    input wire complex_t twiddle,
+    input wire complex_t [1 : 0] coeffs,
+    input wire rounding_config,
+    output logic overflow_exception,
+    output complex_t [1 : 0] result
 );
 
-    typedef enum logic [2 : 0]
-    {
-        IDLE,
-        READ,
-        PROCESS,
-        DONE,
-        ERROR
-    } state_t;
+    logic signed [31 : 0] tmp_re;
+    logic signed [31 : 0] tmp_im;
 
-    state_t current_state;
-    state_t next_state;
-    logic [1 : 0] counter;
+    assign tmp_re = (twiddle.re * coeffs[1].re - twiddle.im * coeffs[1].im);
+    assign tmp_im = (twiddle.re * coeffs[1].im + twiddle.im * coeffs[1].re);
 
-    always_comb begin
-        case (current_state)
-            IDLE: if (write_en) next_state = READ;
-            READ: if (write_en) next_state = PROCESS;
-            PROCESS:
-                begin
-                    if (counter < 2'd3 && write_en)
-                        next_state = IDLE;
-                    else if (counter == 2'd3 && write_en)
-                        next_state = DONE;
-                    else
-                        next_state = ERROR;
-                end
-            ERROR: next_state = IDLE;
-            DONE: if (write_en) next_state = IDLE;
-        endcase
-    end
+    assign result[0].re = coeffs[0].re + tmp_re[15 : 0];
+    assign result[0].im = coeffs[0].im + tmp_im[15 : 0];
+    assign result[1].re = coeffs[0].re - tmp_re[15 : 0];
+    assign result[1].im = coeffs[0].im - tmp_im[15 : 0];
 
 endmodule

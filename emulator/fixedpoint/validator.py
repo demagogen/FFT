@@ -1,6 +1,4 @@
 import functools
-
-
 class Validator:
     @staticmethod
     def width_settings(with_sign: int, frac_width: int, width: int):
@@ -12,22 +10,16 @@ class Validator:
             raise ValueError(
                 f"Constraint failed: {width } - {frac_width } - {with_sign } < 0"
             )
-
-
 def validate_init(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         import inspect
-
         sig = inspect.signature(func)
         bound_args = sig.bind(*args, **kwargs)
         bound_args.apply_defaults()
-
         params = bound_args.arguments
         Validator.width_settings(
             params.get("with_sign"), params.get("frac_width"), params.get("width")
         )
-
         return func(*args, **kwargs)
-
     return wrapper

@@ -5,7 +5,6 @@ PARAMS = {
     "saturate": False,
     "rounding": False,
 }
-
 PARAMS_SATURATE = {
     "with_sign": 1,
     "frac_width": 14,
@@ -13,7 +12,6 @@ PARAMS_SATURATE = {
     "saturate": True,
     "rounding": False,
 }
-
 PARAMS_ROUNDING = {
     "with_sign": 1,
     "frac_width": 14,
@@ -21,7 +19,6 @@ PARAMS_ROUNDING = {
     "saturate": False,
     "rounding": True,
 }
-
 PARAMS_SATURATE_ROUNDING = {
     "with_sign": 1,
     "frac_width": 14,
