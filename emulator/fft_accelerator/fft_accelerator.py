@@ -3,7 +3,7 @@ import numpy
 
 from fft_accelerator.selector import Selector
 from fft_accelerator.dual_port_ram import DualPortRAM
-from fft_accelerator.fft import FFT4
+from fft_accelerator.fft import FFT
 from fft_accelerator.address_generator import AddressGenerator
 from fft_accelerator.control_block import ControlBlock
 from fft_accelerator.lut_with_twiddle_factors import LUTWithTwiddleFactors
@@ -75,6 +75,6 @@ class FFTAccelerator:
         stage = 1
 
         twiddle_factors = self.lut_with_twiddle_factors.twiddle_factors(stage)
-        my_fft = FFT4()
-        fft_result = my_fft.fft_driver(cfp_list, twiddle_factors)
+        my_fft = FFT()
+        fft_result = my_fft.radix4(cfp_list, twiddle_factors)
         return fft_result
