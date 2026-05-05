@@ -6,6 +6,7 @@ from tests.params import PARAMS_SATURATE
 from tests.params import PARAMS_ROUNDING
 from tests.params import PARAMS_SATURATE_ROUNDING
 
+
 def test_mul_hardware_accurate():
     params = PARAMS_SATURATE
     cfp1 = ComplexFixedpoint(complex(0, -0.72), **params)

@@ -12,12 +12,19 @@ from tests.params import PARAMS_SATURATE_ROUNDING
 
 low, high = -1.5555, 1.5555
 
-test_vector_radix2 = numpy.random.uniform(low, high, size = (100, 2)) + 1j * numpy.random.uniform(low, high, size = (100, 2))
+test_vector_radix2 = numpy.random.uniform(
+    low, high, size=(100, 2)
+) + 1j * numpy.random.uniform(low, high, size=(100, 2))
 test_vector_radix4 = numpy.random.uniform(
     low, high, size=(100, 4)
 ) + 1j * numpy.random.uniform(low, high, size=(100, 4))
-test_vector_radix8 = numpy.random.uniform(low, high, size = (100, 8)) + 1j * numpy.random.uniform(low, high, size = (100, 8))
-test_vector_radix16 = numpy.random.uniform(low, high, size = (100, 16)) + 1j * numpy.random.uniform(low, high, size = (100, 16))
+test_vector_radix8 = numpy.random.uniform(
+    low, high, size=(100, 8)
+) + 1j * numpy.random.uniform(low, high, size=(100, 8))
+test_vector_radix16 = numpy.random.uniform(
+    low, high, size=(100, 16)
+) + 1j * numpy.random.uniform(low, high, size=(100, 16))
+
 
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_individual(vector):
@@ -38,6 +45,7 @@ def test_fft_accelerator_individual(vector):
 
     assert numpy.allclose(actual, expected, atol=0.01)
 
+
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_saturate(vector):
     fft = FFTAccelerator()
@@ -56,6 +64,7 @@ def test_fft_accelerator_saturate(vector):
         actual.append(complex(re, im))
 
     assert numpy.allclose(actual, expected, atol=0.01)
+
 
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_rounding(vector):
@@ -76,6 +85,7 @@ def test_fft_accelerator_rounding(vector):
 
     assert numpy.allclose(actual, expected, atol=0.01)
 
+
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_saturate_rounding(vector):
     fft = FFTAccelerator()
@@ -94,6 +104,7 @@ def test_fft_accelerator_saturate_rounding(vector):
         actual.append(complex(re, im))
 
     assert numpy.allclose(actual, expected, atol=0.01)
+
 
 @pytest.mark.parametrize("vector", test_vector_radix2)
 def test_fft_accelerator_radix2(vector):
@@ -115,6 +126,7 @@ def test_fft_accelerator_radix2(vector):
         actual.append(complex(re, im))
 
     assert numpy.allclose(actual, expected, atol=0.01)
+
 
 @pytest.mark.parametrize("vector", test_vector_radix8)
 def test_fft_accelerator_radix8(vector):
@@ -139,6 +151,7 @@ def test_fft_accelerator_radix8(vector):
     #     print(actual[i], " -- ", expected[i])
 
     assert numpy.allclose(actual, expected, atol=0.01)
+
 
 @pytest.mark.parametrize("vector", test_vector_radix16)
 def test_fft_accelerator_radix16(vector):

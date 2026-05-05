@@ -12,7 +12,6 @@ PARAMS = {
 }
 
 
-
 class FFT:
     def __init__(self, polynomial=None):
 
@@ -50,7 +49,9 @@ class FFT:
 
         return [coefficient0, coefficient1, coefficient2, coefficient3]
 
-    def radix2(self, coeffs : list[ComplexFixedpoint], twiddle_factors) -> list[ComplexFixedpoint]:
+    def radix2(
+        self, coeffs: list[ComplexFixedpoint], twiddle_factors
+    ) -> list[ComplexFixedpoint]:
         x0, x1 = coeffs
 
         result1 = x0 + x1
@@ -80,7 +81,9 @@ class FFT:
 
         return [result1, r1, result2, r3]
 
-    def radix8(self, coeffs : list[ComplexFixedpoint], twiddle_factors=None) -> list[ComplexFixedpoint]:
+    def radix8(
+        self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
+    ) -> list[ComplexFixedpoint]:
         x0, x1, x2, x3, x4, x5, x6, x7 = coeffs
 
         tmp0, tmp1, tmp2, tmp3 = self.radix4([x0, x2, x4, x6])
@@ -103,9 +106,33 @@ class FFT:
 
         return [result0, result1, result2, result3, result4, result5, result6, result7]
 
-    def radix16(self, coeffs : list[ComplexFixedpoint], twiddle_factors=None) -> list[ComplexFixedpoint]:
-        tmp0 = self.radix8([coeffs[0], coeffs[2], coeffs[4], coeffs[6], coeffs[8], coeffs[10], coeffs[12], coeffs[14]])
-        tmp1 = self.radix8([coeffs[1], coeffs[3], coeffs[5], coeffs[7], coeffs[9], coeffs[11], coeffs[13], coeffs[15]])
+    def radix16(
+        self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
+    ) -> list[ComplexFixedpoint]:
+        tmp0 = self.radix8(
+            [
+                coeffs[0],
+                coeffs[2],
+                coeffs[4],
+                coeffs[6],
+                coeffs[8],
+                coeffs[10],
+                coeffs[12],
+                coeffs[14],
+            ]
+        )
+        tmp1 = self.radix8(
+            [
+                coeffs[1],
+                coeffs[3],
+                coeffs[5],
+                coeffs[7],
+                coeffs[9],
+                coeffs[11],
+                coeffs[13],
+                coeffs[15],
+            ]
+        )
 
         lut = LUTWithTwiddleFactors()
         w016 = lut.twiddle_factor(0, 16)
@@ -134,4 +161,21 @@ class FFT:
         result7 = tmp0[7] + w716 * tmp1[7]
         result15 = tmp0[7] - w716 * tmp1[7]
 
-        return [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15]
+        return [
+            result0,
+            result1,
+            result2,
+            result3,
+            result4,
+            result5,
+            result6,
+            result7,
+            result8,
+            result9,
+            result10,
+            result11,
+            result12,
+            result13,
+            result14,
+            result15,
+        ]
