@@ -148,7 +148,7 @@ def test_fft_accelerator_radix16(vector):
     inputs = [ComplexFixedpoint(v, **PARAMS_SATURATE_ROUNDING) for v in scaled_vector]
 
     fft = FFT()
-    fft_result = fft.radix8(inputs, (0, 0))
+    fft_result = fft.radix16(inputs, (0, 0))
     # fft_result = fft.driver(inputs)
 
     expected = numpy.fft.fft(scaled_vector)
