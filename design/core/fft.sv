@@ -21,3 +21,33 @@ module radix2
     assign result[1].im = coeffs[0].im - tmp_im[15 : 0];
 
 endmodule
+
+// TODO not synthesing
+module radix4
+(
+    input wire complex_t [1 : 0] twiddles,
+    input wire complex_t [3 : 0] coeffs,
+    input wire rounding_config,
+    output logic overflow_exception,
+    output complex_t [3 : 0] result
+);
+
+    complex_t [1 : 0] tmp_result0, tmp_result1;
+
+    radix2(
+        .twiddle(twiddles[0]),
+        .coeffs([coeffs[2], coeffs[0]]),
+        .rounding_config(rounding_config),
+        .overflow_exception(overflow_exception),
+        .result(tmp_result0)
+    );
+
+    radix2(
+        .twiddle(twiddles[0]),
+        .coeffs([coeffs[3], coeffs[1]]),
+        .rounding_config(rounding_config),
+        .overflow_exception(overflow_exception),
+        .result(tmp_result1)
+    );
+
+endmodule
