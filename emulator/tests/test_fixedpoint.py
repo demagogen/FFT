@@ -1,13 +1,19 @@
 import pytest
 from fixedpoint.fixedpoint import Fixedpoint
+
+
 def test_signed_raw_value():
     value = 12.34
     fp = Fixedpoint(12.34, 1, 10, 15)
     assert fp.raw_value == 12636
+
+
 def test_signed_nested_bits():
     value = 12.34
     fp = Fixedpoint(12.34, 1, 10, 15)
     assert fp.nested_bits == [0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0]
+
+
 def test_signed_raw_add():
     value1 = 15.6
     value2 = -234.2

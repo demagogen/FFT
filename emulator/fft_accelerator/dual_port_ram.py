@@ -1,4 +1,6 @@
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
+
+
 class DualPortRAM:
     def __init__(self):
         self.WRITE_DATA_BUS_WIDTH = 8 * 16

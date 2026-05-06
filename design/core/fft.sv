@@ -4,6 +4,8 @@ typedef struct packed
     logic signed [15 : 0] im;
 } complex_t;
 
+// module trunctation
+
 module radix2
 (
     input wire complex_t twiddle,

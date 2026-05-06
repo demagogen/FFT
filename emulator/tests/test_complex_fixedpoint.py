@@ -4,6 +4,8 @@ from tests.params import PARAMS
 from tests.params import PARAMS_SATURATE
 from tests.params import PARAMS_ROUNDING
 from tests.params import PARAMS_SATURATE_ROUNDING
+
+
 def test_mul_hardware_accurate():
     params = PARAMS_SATURATE
     cfp1 = ComplexFixedpoint(complex(0, -0.72), **params)
@@ -13,24 +15,32 @@ def test_mul_hardware_accurate():
     expected_imag_bits = [0] * 16
     assert result.real.raw_value == 1450
     assert result.nested_bits == [expected_real_bits, expected_imag_bits]
+
+
 def test_saturation_overflow():
     c1 = ComplexFixedpoint(complex(1.5, 0), **PARAMS_SATURATE)
     c2 = ComplexFixedpoint(complex(1.5, 0), **PARAMS_SATURATE)
     result = c1 * c2
     assert result.real.raw_value == 32767
     assert result.real.nested_bits == [0] + [1] * 15
+
+
 def test_saturation_underflow():
     c1 = ComplexFixedpoint(complex(-1.5, 0), **PARAMS_SATURATE)
     c2 = ComplexFixedpoint(complex(1.5, 0), **PARAMS_SATURATE)
     result = c1 * c2
     assert result.real.raw_value == -32768
     assert result.real.nested_bits == [1] + [0] * 15
+
+
 def test_complex_add_logic():
     c1 = ComplexFixedpoint(complex(0.5, 0.5), **PARAMS_SATURATE)
     c2 = ComplexFixedpoint(complex(0.75, -0.25), **PARAMS_SATURATE)
     result = c1 + c2
     assert result.real.raw_value == 20480
     assert result.imag.raw_value == 4096
+
+
 def test_rounding_off():
     params_no_round = PARAMS_SATURATE.copy()
     params_no_round["rounding"] = False
@@ -38,6 +48,8 @@ def test_rounding_off():
     cfp2 = ComplexFixedpoint(complex(0, 0.123), **params_no_round)
     result = cfp1 * cfp2
     assert result.real.raw_value == 1450
+
+
 def test_wrap_around_off():
     params_wrap = PARAMS_SATURATE.copy()
     params_wrap["saturate"] = False

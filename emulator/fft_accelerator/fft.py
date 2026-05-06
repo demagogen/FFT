@@ -2,6 +2,7 @@ from fixedpoint.fixedpoint import Fixedpoint
 from fft_accelerator.dual_port_ram import DualPortRAM
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 from fft_accelerator.lut_with_twiddle_factors import LUTWithTwiddleFactors
+
 PARAMS = {
     "with_sign": 1,
     "frac_width": 14,
@@ -9,6 +10,8 @@ PARAMS = {
     "saturate": True,
     "rounding": False,
 }
+
+
 class FFT:
     def __init__(self, polynomial=None):
         self.RAM_INPUT_BUS_WIDTH = 16 * 8
@@ -18,8 +21,10 @@ class FFT:
         self.ram_input = [0] * self.RAM_INPUT_BUS_WIDTH
         self.lut_with_twiddle_factors = [0] * self.LUT_WITH_TWIDDLE_FACTORS_BUS_WIDTH
         self.output = [0] * self.OUTPUT_BUS_WIDTH
+
     def __repr__(self):
         return f"FFT(polynomial='{self .polynomial }', size={self .SIZE })"
+
     def set_coefficients(self, coefficients_from_ram: list[ComplexFixedpoint]):
         coefficient0 = [0] * self.COEFFICIENT_WIDTH
         coefficient1 = [0] * self.COEFFICIENT_WIDTH
@@ -39,6 +44,7 @@ class FFT:
                 3 * self.COEFFICIENT_WIDTH + index
             ]
         return [coefficient0, coefficient1, coefficient2, coefficient3]
+
     def radix2(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors
     ) -> list[ComplexFixedpoint]:
@@ -46,6 +52,7 @@ class FFT:
         result1 = x0 + x1
         result2 = x0 - x1
         return [result1, result2]
+
     def radix4(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
     ) -> list[ComplexFixedpoint]:
@@ -61,6 +68,7 @@ class FFT:
         r1 = tmp2 + j_term
         r3 = tmp2 - j_term
         return [result1, r1, result2, r3]
+
     def radix8(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
     ) -> list[ComplexFixedpoint]:
@@ -81,6 +89,7 @@ class FFT:
         result3 = tmp3 + w38 * tmp7
         result7 = tmp3 - w38 * tmp7
         return [result0, result1, result2, result3, result4, result5, result6, result7]
+
     def radix16(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
     ) -> list[ComplexFixedpoint]:
