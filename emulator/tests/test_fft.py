@@ -1,7 +1,6 @@
 import numpy
 import pytest
 from fft_accelerator.fft_accelerator import FFTAccelerator
-from fixedpoint.fixedpoint import Fixedpoint
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 from fft_accelerator.fft import FFT
 from tests.params import PARAMS
@@ -88,7 +87,7 @@ def test_fft_accelerator_saturate_rounding(vector):
 def test_fft_accelerator_radix2(vector):
     scaled_vector = vector / 2
     inputs = [ComplexFixedpoint(v, **PARAMS_SATURATE_ROUNDING) for v in scaled_vector]
-    save_hex_file(inputs, "../design/core/build/input_hex.txt")
+    save_hex_file(inputs, "../design/testbenches/tests/radix2_inputs.txt")
     fft = FFT()
     fft_result = fft.radix2(inputs, (0, 0))
     expected = numpy.fft.fft(scaled_vector)
@@ -97,7 +96,7 @@ def test_fft_accelerator_radix2(vector):
         re = comp.real.raw_value / (1 << comp.frac_width)
         im = comp.imag.raw_value / (1 << comp.frac_width)
         actual.append(complex(re, im))
-    save_hex_file(fft_result, "../design/core/build/expected_hex.txt")
+    save_hex_file(fft_result, "../design/testbenches/tests/radix2_answers.txt")
     assert numpy.allclose(actual, expected, atol=0.001)
 
 
