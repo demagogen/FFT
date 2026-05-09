@@ -50,4 +50,5 @@ class ComplexFixedpoint:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return f"ComplexFixedpoint({self .real }, {self .imag })"
+        return f"({self.real}, {self.imag})"
+        # return f"ComplexFixedpoint({self .real }, {self .imag })"

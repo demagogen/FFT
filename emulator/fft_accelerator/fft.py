@@ -1,3 +1,5 @@
+import numpy
+import math
 from fixedpoint.fixedpoint import Fixedpoint
 from fft_accelerator.dual_port_ram import DualPortRAM
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
@@ -45,6 +47,45 @@ class FFT:
             ]
         return [coefficient0, coefficient1, coefficient2, coefficient3]
 
+    def W(k, n):
+        return numpy.exp(-2 * numpy.pi * 1j * k / n)
+
+    def gen_addr(n):
+        N = 2**n
+        BASE_FFT_LEN = 4
+        BASE_FFT_STAGES = math.ceil(math.log2(BASE_FFT_LEN))
+        addresses = []
+        stage_addresses = []
+        stage_weights = []
+        weights = []
+        lut = LUTWithTwiddleFactors()
+
+        phases = (1 << (n - BASE_FFT_STAGES))
+        stages = math.ceil(n / BASE_FFT_STAGES)
+
+        for stage in range(stages):
+            num_sub_stages = 1 << (stage * BASE_FFT_STAGES)
+            for phase in range(phases // num_sub_stages):
+                for sub_stage in range(num_sub_stages):
+
+                    if stage == 0:
+                        weights.append([lut.twiddle_factor(0, N), lut.twiddle_factor(0, N), lut.twiddle_factor(0, N), lut.twiddle_factor(0, N)])
+                    else:
+                        divider = 2**(2*stage + 1)
+                        weights.append([
+                            lut.twiddle_factor(N // divider * sub_stage, N),
+                            lut.twiddle_factor(N // divider * sub_stage, N),
+                            lut.twiddle_factor(N // divider // 2 * sub_stage, N),
+                            lut.twiddle_factor(N // divider // 2 * (divider // 2 + sub_stage), N)
+                        ])
+
+                    addresses.append([
+                        phase * BASE_FFT_LEN * num_sub_stages + block_inp * num_sub_stages + sub_stage
+                        for block_inp in range(BASE_FFT_LEN)
+                    ])
+
+        return addresses, weights
+
     def radix2(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors
     ) -> list[ComplexFixedpoint]:
@@ -53,21 +94,22 @@ class FFT:
         result2 = x0 - x1
         return [result1, result2]
 
-    def radix4(
-        self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
-    ) -> list[ComplexFixedpoint]:
+    def radix4(self, coeffs):
         x0, x1, x2, x3 = coeffs
-        tmp1 = x0 + x2
-        tmp2 = x0 - x2
-        tmp3 = x1 + x3
-        tmp4 = x1 - x3
+
+        t0 = x0 + x2
+        t1 = x1 + x3
+        t2 = x0 - x2
+        t3 = x1 - x3
+
         minus_j = ComplexFixedpoint(complex(0, -1), **PARAMS)
-        result1 = tmp1 + tmp3
-        result2 = tmp1 - tmp3
-        j_term = minus_j * tmp4
-        r1 = tmp2 + j_term
-        r3 = tmp2 - j_term
-        return [result1, r1, result2, r3]
+
+        y0 = t0 + t1
+        y1 = t2 + minus_j * t3
+        y2 = t0 - t1
+        y3 = t2 - minus_j * t3
+
+        return [y0, y1, y2, y3]
 
     def radix8(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
@@ -93,70 +135,36 @@ class FFT:
     def radix16(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors=None
     ) -> list[ComplexFixedpoint]:
-        tmp0 = self.radix8(
-            [
-                coeffs[0],
-                coeffs[2],
-                coeffs[4],
-                coeffs[6],
-                coeffs[8],
-                coeffs[10],
-                coeffs[12],
-                coeffs[14],
-            ]
-        )
-        tmp1 = self.radix8(
-            [
-                coeffs[1],
-                coeffs[3],
-                coeffs[5],
-                coeffs[7],
-                coeffs[9],
-                coeffs[11],
-                coeffs[13],
-                coeffs[15],
-            ]
-        )
-        lut = LUTWithTwiddleFactors()
-        w016 = lut.twiddle_factor(0, 16)
-        w116 = lut.twiddle_factor(1, 16)
-        w216 = lut.twiddle_factor(2, 16)
-        w316 = lut.twiddle_factor(3, 16)
-        w416 = lut.twiddle_factor(4, 16)
-        w516 = lut.twiddle_factor(5, 16)
-        w616 = lut.twiddle_factor(6, 16)
-        w716 = lut.twiddle_factor(7, 16)
-        result0 = tmp0[0] + w016 * tmp1[0]
-        result8 = tmp0[0] - w016 * tmp1[0]
-        result1 = tmp0[1] + w116 * tmp1[1]
-        result9 = tmp0[1] - w116 * tmp1[1]
-        result2 = tmp0[2] + w216 * tmp1[2]
-        result10 = tmp0[2] - w216 * tmp1[2]
-        result3 = tmp0[3] + w316 * tmp1[3]
-        result11 = tmp0[3] - w316 * tmp1[3]
-        result4 = tmp0[4] + w416 * tmp1[4]
-        result12 = tmp0[4] - w416 * tmp1[4]
-        result5 = tmp0[5] + w516 * tmp1[5]
-        result13 = tmp0[5] - w516 * tmp1[5]
-        result6 = tmp0[6] + w616 * tmp1[6]
-        result14 = tmp0[6] - w616 * tmp1[6]
-        result7 = tmp0[7] + w716 * tmp1[7]
-        result15 = tmp0[7] - w716 * tmp1[7]
-        return [
-            result0,
-            result1,
-            result2,
-            result3,
-            result4,
-            result5,
-            result6,
-            result7,
-            result8,
-            result9,
-            result10,
-            result11,
-            result12,
-            result13,
-            result14,
-            result15,
-        ]
+        addresses, weights = FFT.gen_addr(int(math.log2(len(coeffs))))
+        print("Addresses: ", addresses)
+        print("Weights: ", weights)
+#         for i in range(len(addresses)):
+#             addr = addresses[i]
+#             w    = weights[i]
+#
+#             input = [
+#                 coeffs[addr[0]],
+#                 coeffs[addr[1]],
+#                 coeffs[addr[2]],
+#                 coeffs[addr[3]],
+#             ]
+#             tmp = self.radix4(input)
+#
+#
+#             coeffs[addr[0]] = tmp[0]
+#             coeffs[addr[1]] = tmp[1] * w[1]
+#             coeffs[addr[2]] = tmp[2] * w[2]
+#             coeffs[addr[3]] = tmp[3] * w[3]
+        for stage in range(len(addresses)):
+            # for addr in range(len(addresses[stage])):
+            addr = addresses[stage]
+            w = weights[stage]
+            input = [coeffs[addr[0]], coeffs[addr[1]], coeffs[addr[2]], coeffs[addr[3]]]
+            tmp = self.radix4(input)
+            coeffs[addr[0]] = tmp[0]
+            coeffs[addr[1]] = tmp[1] * w[1]
+            coeffs[addr[2]] = tmp[2] * w[2]
+            coeffs[addr[3]] = tmp[3] * w[3]
+
+
+        return coeffs
