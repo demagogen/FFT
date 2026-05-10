@@ -1,7 +1,6 @@
 import numpy
 import math
 from fixedpoint.fixedpoint import Fixedpoint
-from fft_accelerator.dual_port_ram import DualPortRAM
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 from fft_accelerator.lut_with_twiddle_factors import LUTWithTwiddleFactors
 

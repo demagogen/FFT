@@ -1,5 +1,4 @@
 import numpy
-from fft_accelerator.dual_port_ram import DualPortRAM
 from fft_accelerator.fft import FFT
 from fft_accelerator.address_generator import AddressGenerator
 from fft_accelerator.lut_with_twiddle_factors import LUTWithTwiddleFactors
@@ -22,7 +21,6 @@ class FFTAccelerator:
         self.m_axis_last = 0
         self.m_axis_ready = 0
         self.m_axis_user = 0
-        self.dual_port_ram = DualPortRAM()
         self.address_generator = AddressGenerator()
         self.lut_with_twiddle_factors = LUTWithTwiddleFactors()
         self.data = [0] * self.COEFFICIENTS_AMOUNT
