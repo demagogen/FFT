@@ -36,35 +36,110 @@ def test_address_generator16():
     assert addresses == addresses16
 
 
-def test_fft64_stage_count():
-    addresses = AddressGenerator.generate_addresses(64)
+def test_address_generator64_stages():
+    amount = 64
+    radix = 4
 
-    expected_stages = int(math.log(64, 4))
+    addresses = AddressGenerator.generate_addresses(amount)
+
+    expected_stages = int(math.log(amount, radix))
 
     assert len(addresses) == expected_stages
 
 
-def test_fft64_butterflies_per_stage():
+def test_address_generator64_butterflies():
+    amount = 64
+    radix = 4
 
-    addresses = AddressGenerator.generate_addresses(64)
+    addresses = AddressGenerator.generate_addresses(amount)
 
-    expected = 64 // 4
+    expected = amount // radix
 
     for stage in addresses:
         assert len(stage) == expected
 
-def test_fft64_stride():
+def test_address_generator64_strides():
 
-    N = 64
+    amount = 64
+    radix = 4
 
-    addresses = AddressGenerator.generate_addresses(N)
+    addresses = AddressGenerator.generate_addresses(amount)
 
-    for stage_idx, stage in enumerate(addresses):
+    for stage_index, stage in enumerate(addresses):
 
-        stride = 4 ** stage_idx
+        stride = radix ** stage_index
 
         for butterfly in stage:
 
             assert butterfly[1] - butterfly[0] == stride
             assert butterfly[2] - butterfly[1] == stride
             assert butterfly[3] - butterfly[2] == stride
+
+def test_address_generator64_unique_addresses():
+
+    amount = 64
+
+    addresses = AddressGenerator.generate_addresses(amount)
+
+    for stage in addresses:
+
+        flat = []
+
+        for butterfly in stage:
+            flat.extend(butterfly)
+
+        assert sorted(flat) == list(range(amount))
+
+def test_address_generator256():
+
+    amount = 256
+    radix = 4
+
+    addresses = AddressGenerator.generate_addresses(amount)
+
+    assert len(addresses) == radix
+
+    for stage_index, stage in enumerate(addresses):
+
+        stride = radix ** stage_index
+
+        assert len(stage) == 64
+
+        flat = []
+
+        for butterfly in stage:
+
+            flat.extend(butterfly)
+
+            assert butterfly[1] - butterfly[0] == stride
+            assert butterfly[2] - butterfly[1] == stride
+            assert butterfly[3] - butterfly[2] == stride
+
+        assert sorted(flat) == list(range(amount))
+
+def test_address_generator1024():
+
+    amount = 1024
+    radix = 4
+
+    addresses = AddressGenerator.generate_addresses(amount)
+
+    assert len(addresses) == 5
+
+    for stage_index, stage in enumerate(addresses):
+
+        stride = radix ** stage_index
+
+        assert len(stage) == 256
+
+        flat = []
+
+        for butterfly in stage:
+
+            flat.extend(butterfly)
+
+            assert butterfly[1] - butterfly[0] == stride
+            assert butterfly[2] - butterfly[1] == stride
+            assert butterfly[3] - butterfly[2] == stride
+
+        assert sorted(flat) == list(range(amount))
