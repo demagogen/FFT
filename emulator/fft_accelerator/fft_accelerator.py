@@ -50,7 +50,6 @@ class FFTAccelerator:
 
     def driver(self, cfp_list: list[ComplexFixedpoint]):
         stage = 1
-        twiddle_factors = self.lut_with_twiddle_factors.twiddle_factors(stage)
         my_fft = FFT()
         fft_result = my_fft.radix4(cfp_list)
         return fft_result

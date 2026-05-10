@@ -11,7 +11,6 @@ class AddressGenerator:
             stride = radix**stage
             group = radix * stride
             stage_addresses = []
-            butterfly_input = []
             for base in range(0, amount, group):
                 for offset in range(0, stride):
                     stage_addresses.append(

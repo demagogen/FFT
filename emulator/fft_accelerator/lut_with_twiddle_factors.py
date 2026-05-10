@@ -1,4 +1,5 @@
 import numpy
+import math
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 
 PARAMS = {
@@ -25,9 +26,23 @@ class LUTWithTwiddleFactors:
         tf = numpy.exp(-2 * numpy.pi * 1j * k_root / root_power)
         return ComplexFixedpoint(tf, **PARAMS)
 
-    def twiddle_factors(self, stage: int) -> list[ComplexFixedpoint]:
-        tf_fp_list = []
-        for index in range(0, (stage * 4)):
-            tf_fp_extra = self.twiddle_factor(index, stage)
-            tf_fp_list.append(tf_fp_extra)
-        return tf_fp_list
+    def generate_twiddles(self, amount):
+        radix = 4
+        stages = int(math.log(amount, radix))
+        twiddles = []
+        for stage in range(0, stages):
+            stride = radix ** stage
+            group = radix * stride
+            stage_twiddles = []
+            for base in range(0, amount, group):
+                for offset in range(0, stride):
+                    k = offset * (amount // group)
+                    stage_twiddles.append(
+                        [
+                            self.twiddle_factor(0 * k, amount),
+                            self.twiddle_factor(1 * k, amount),
+                            self.twiddle_factor(2 * k, amount),
+                            self.twiddle_factor(3 * k, amount)
+                        ])
+            twiddles.append(stage_twiddles)
+        return twiddles
