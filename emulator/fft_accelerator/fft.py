@@ -60,7 +60,7 @@ class FFT:
         weights = []
         lut = LUTWithTwiddleFactors()
 
-        phases = (1 << (n - BASE_FFT_STAGES))
+        phases = 1 << (n - BASE_FFT_STAGES)
         stages = math.ceil(n / BASE_FFT_STAGES)
 
         for stage in range(stages):
@@ -69,20 +69,35 @@ class FFT:
                 for sub_stage in range(num_sub_stages):
 
                     if stage == 0:
-                        weights.append([lut.twiddle_factor(0, N), lut.twiddle_factor(0, N), lut.twiddle_factor(0, N), lut.twiddle_factor(0, N)])
+                        weights.append(
+                            [
+                                lut.twiddle_factor(0, N),
+                                lut.twiddle_factor(0, N),
+                                lut.twiddle_factor(0, N),
+                                lut.twiddle_factor(0, N),
+                            ]
+                        )
                     else:
-                        divider = 2**(2*stage + 1)
-                        weights.append([
-                            lut.twiddle_factor(N // divider * sub_stage, N),
-                            lut.twiddle_factor(N // divider * sub_stage, N),
-                            lut.twiddle_factor(N // divider // 2 * sub_stage, N),
-                            lut.twiddle_factor(N // divider // 2 * (divider // 2 + sub_stage), N)
-                        ])
+                        divider = 2 ** (2 * stage + 1)
+                        weights.append(
+                            [
+                                lut.twiddle_factor(N // divider * sub_stage, N),
+                                lut.twiddle_factor(N // divider * sub_stage, N),
+                                lut.twiddle_factor(N // divider // 2 * sub_stage, N),
+                                lut.twiddle_factor(
+                                    N // divider // 2 * (divider // 2 + sub_stage), N
+                                ),
+                            ]
+                        )
 
-                    addresses.append([
-                        phase * BASE_FFT_LEN * num_sub_stages + block_inp * num_sub_stages + sub_stage
-                        for block_inp in range(BASE_FFT_LEN)
-                    ])
+                    addresses.append(
+                        [
+                            phase * BASE_FFT_LEN * num_sub_stages
+                            + block_inp * num_sub_stages
+                            + sub_stage
+                            for block_inp in range(BASE_FFT_LEN)
+                        ]
+                    )
 
         return addresses, weights
 
@@ -138,23 +153,23 @@ class FFT:
         addresses, weights = FFT.gen_addr(int(math.log2(len(coeffs))))
         print("Addresses: ", addresses)
         print("Weights: ", weights)
-#         for i in range(len(addresses)):
-#             addr = addresses[i]
-#             w    = weights[i]
-#
-#             input = [
-#                 coeffs[addr[0]],
-#                 coeffs[addr[1]],
-#                 coeffs[addr[2]],
-#                 coeffs[addr[3]],
-#             ]
-#             tmp = self.radix4(input)
-#
-#
-#             coeffs[addr[0]] = tmp[0]
-#             coeffs[addr[1]] = tmp[1] * w[1]
-#             coeffs[addr[2]] = tmp[2] * w[2]
-#             coeffs[addr[3]] = tmp[3] * w[3]
+        #         for i in range(len(addresses)):
+        #             addr = addresses[i]
+        #             w    = weights[i]
+        #
+        #             input = [
+        #                 coeffs[addr[0]],
+        #                 coeffs[addr[1]],
+        #                 coeffs[addr[2]],
+        #                 coeffs[addr[3]],
+        #             ]
+        #             tmp = self.radix4(input)
+        #
+        #
+        #             coeffs[addr[0]] = tmp[0]
+        #             coeffs[addr[1]] = tmp[1] * w[1]
+        #             coeffs[addr[2]] = tmp[2] * w[2]
+        #             coeffs[addr[3]] = tmp[3] * w[3]
         for stage in range(len(addresses)):
             # for addr in range(len(addresses[stage])):
             addr = addresses[stage]
@@ -165,6 +180,5 @@ class FFT:
             coeffs[addr[1]] = tmp[1] * w[1]
             coeffs[addr[2]] = tmp[2] * w[2]
             coeffs[addr[3]] = tmp[3] * w[3]
-
 
         return coeffs

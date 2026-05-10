@@ -140,7 +140,7 @@ def test_fft_accelerator_radix16(vector):
         re = comp.real.raw_value / (1 << comp.frac_width)
         im = comp.imag.raw_value / (1 << comp.frac_width)
         actual.append(complex(re, im))
-    perm = [0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15]
+    perm = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15]
 
     reordered_actual = [actual[p] for p in perm]
     for i in range(0, 16):
@@ -150,7 +150,7 @@ def test_fft_accelerator_radix16(vector):
 
 # @pytest.mark.parametrize("amount", elements_amounts)
 # def test_address_generator(amount: int):
-    # for i in range(4, 16):
-        # addresses = FFT.gen_addr(i)
-        # print("Addresses ", i, ":", addresses)
-        # assert 0
+# for i in range(4, 16):
+# addresses = FFT.gen_addr(i)
+# print("Addresses ", i, ":", addresses)
+# assert 0
