@@ -13,10 +13,9 @@ class AddressGenerator:
             butterfly_input = []
             for base in range(0, amount, group):
                 for offset in range(0, stride):
-                    butterfly_input.append([base + offset + 0 * stride,
+                    stage_addresses.append([base + offset + 0 * stride,
                                             base + offset + 1 * stride,
                                             base + offset + 2 * stride,
                                             base + offset + 3 * stride])
-            # stage_addresses.append(butterfly_input)
-            addresses.append(butterfly_input)
+            addresses.append(stage_addresses)
         return addresses
