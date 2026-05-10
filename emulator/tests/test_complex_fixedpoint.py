@@ -1,9 +1,12 @@
 import pytest
+
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
-from tests.params import PARAMS
-from tests.params import PARAMS_SATURATE
-from tests.params import PARAMS_ROUNDING
-from tests.params import PARAMS_SATURATE_ROUNDING
+from tests.params import (
+    PARAMS,
+    PARAMS_ROUNDING,
+    PARAMS_SATURATE,
+    PARAMS_SATURATE_ROUNDING,
+)
 
 
 def test_mul_hardware_accurate():

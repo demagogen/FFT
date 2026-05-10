@@ -13,7 +13,7 @@ class Fixedpoint:
         if isinstance(value, (int, numpy.integer)):
             raw = value
         else:
-            raw = int(numpy.floor(value * (1 << self.frac_width)))
+            raw = int(round(value * (1 << self.frac_width)))
         self.raw_value = self._apply_hardware_limit(raw)
         self._update_nested_bits()
 
@@ -64,7 +64,7 @@ class Fixedpoint:
         res_large = self.raw_value * other.raw_value
         div = 1 << self.frac_width
         if self.rounding and self.frac_width > 0:
-            res_raw = int(numpy.floor(res_large / div + 0.5))
+            res_raw = int(numpy.round(res_large / div))
         else:
             res_raw = int(res_large / div)
         return self._create_from_raw(self._apply_hardware_limit(res_raw))

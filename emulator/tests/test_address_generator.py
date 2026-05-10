@@ -1,5 +1,7 @@
-import pytest
 import math
+
+import pytest
+
 from fft_accelerator.address_generator import AddressGenerator
 
 

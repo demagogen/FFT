@@ -51,4 +51,3 @@ class ComplexFixedpoint:
 
     def __repr__(self):
         return f"({self.real}, {self.imag})"
-        # return f"ComplexFixedpoint({self .real }, {self .imag })"

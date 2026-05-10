@@ -1,4 +1,5 @@
 import math
+
 from fft_accelerator.lut_with_twiddle_factors import LUTWithTwiddleFactors
 
 
