@@ -46,60 +46,6 @@ class FFT:
             ]
         return [coefficient0, coefficient1, coefficient2, coefficient3]
 
-    def W(k, n):
-        return numpy.exp(-2 * numpy.pi * 1j * k / n)
-
-    def gen_addr(n):
-        N = 2**n
-        BASE_FFT_LEN = 4
-        BASE_FFT_STAGES = math.ceil(math.log2(BASE_FFT_LEN))
-        addresses = []
-        stage_addresses = []
-        stage_weights = []
-        weights = []
-        lut = LUTWithTwiddleFactors()
-
-        phases = 1 << (n - BASE_FFT_STAGES)
-        stages = math.ceil(n / BASE_FFT_STAGES)
-
-        for stage in range(stages):
-            num_sub_stages = 1 << (stage * BASE_FFT_STAGES)
-            for phase in range(phases // num_sub_stages):
-                for sub_stage in range(num_sub_stages):
-
-                    if stage == 0:
-                        weights.append(
-                            [
-                                lut.twiddle_factor(0, N),
-                                lut.twiddle_factor(0, N),
-                                lut.twiddle_factor(0, N),
-                                lut.twiddle_factor(0, N),
-                            ]
-                        )
-                    else:
-                        divider = 2 ** (2 * stage + 1)
-                        weights.append(
-                            [
-                                lut.twiddle_factor(N // divider * sub_stage, N),
-                                lut.twiddle_factor(N // divider * sub_stage, N),
-                                lut.twiddle_factor(N // divider // 2 * sub_stage, N),
-                                lut.twiddle_factor(
-                                    N // divider // 2 * (divider // 2 + sub_stage), N
-                                ),
-                            ]
-                        )
-
-                    addresses.append(
-                        [
-                            phase * BASE_FFT_LEN * num_sub_stages
-                            + block_inp * num_sub_stages
-                            + sub_stage
-                            for block_inp in range(BASE_FFT_LEN)
-                        ]
-                    )
-
-        return addresses, weights
-
     def radix2(
         self, coeffs: list[ComplexFixedpoint], twiddle_factors
     ) -> list[ComplexFixedpoint]:
