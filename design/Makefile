@@ -26,7 +26,7 @@ synth: $(BUILD_DIR)
 
 test: $(BUILD_DIR)
 	@echo "--- Running Tests ---"
-	$(IVERILOG) -g2012 -I core -o $(BUILD_DIR)/sim_out $(TB_DIR)/radix2_testbench.sv
+	$(IVERILOG) -g2012 -I core -o $(BUILD_DIR)/sim_out $(TB_DIR)/radix4_testbench.sv
 	$(VVP) $(BUILD_DIR)/sim_out
 
 clean:

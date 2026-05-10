@@ -85,7 +85,6 @@ class FFT:
                     coeffs[address[3]] * input_twiddles[3] * scale,
                 ]
                 result = self.radix4(input_coeffs)
-                scale = ComplexFixedpoint(0.25, **PARAMS)
                 coeffs[address[0]] = result[0]
                 coeffs[address[1]] = result[1]
                 coeffs[address[2]] = result[2]
