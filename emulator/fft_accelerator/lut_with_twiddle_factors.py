@@ -31,7 +31,7 @@ class LUTWithTwiddleFactors:
         stages = int(math.log(amount, radix))
         twiddles = []
         for stage in range(0, stages):
-            stride = radix ** stage
+            stride = radix**stage
             group = radix * stride
             stage_twiddles = []
             for base in range(0, amount, group):
@@ -42,7 +42,8 @@ class LUTWithTwiddleFactors:
                             self.twiddle_factor(0 * k, amount),
                             self.twiddle_factor(1 * k, amount),
                             self.twiddle_factor(2 * k, amount),
-                            self.twiddle_factor(3 * k, amount)
-                        ])
+                            self.twiddle_factor(3 * k, amount),
+                        ]
+                    )
             twiddles.append(stage_twiddles)
         return twiddles
