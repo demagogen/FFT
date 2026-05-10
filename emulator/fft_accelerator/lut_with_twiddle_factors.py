@@ -12,14 +12,6 @@ PARAMS = {
 
 
 class LUTWithTwiddleFactors:
-    def __init__(self):
-        self.ADDRESS_GENERATOR_BUS_WIDTH = 10
-        self.FFT_BUS_WIDTH = 32
-        self.ROM_BUS_WIDTH = 32
-        self.address_generator = [0] * self.ADDRESS_GENERATOR_BUS_WIDTH
-        self.fft = [0] * self.FFT_BUS_WIDTH
-        self.rom = [0] * self.ROM_BUS_WIDTH
-
     def twiddle_factor(self, k_root: int, root_power: int) -> ComplexFixedpoint:
         if root_power <= 0:
             root_power = 4

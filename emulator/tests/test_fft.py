@@ -1,6 +1,5 @@
 import numpy
 import pytest
-from fft_accelerator.fft_accelerator import FFTAccelerator
 from fixedpoint.complex_fixedpoint import ComplexFixedpoint
 from fft_accelerator.fft import FFT
 from tests.params import PARAMS
@@ -27,10 +26,10 @@ elements_amounts = [4, 5, 6, 7, 8]
 
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_individual(vector):
-    fft = FFTAccelerator()
+    fft = FFT()
     scaled_vector = vector / 4
     inputs = [ComplexFixedpoint(v, **PARAMS) for v in scaled_vector]
-    fft_result = fft.driver(inputs)
+    fft_result = fft.radix4(inputs)
     expected = numpy.fft.fft(scaled_vector)
     actual = []
     for comp in fft_result:
@@ -42,10 +41,10 @@ def test_fft_accelerator_individual(vector):
 
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_saturate(vector):
-    fft = FFTAccelerator()
+    fft = FFT()
     scaled_vector = vector / 4
     inputs = [ComplexFixedpoint(v, **PARAMS_SATURATE) for v in scaled_vector]
-    fft_result = fft.driver(inputs)
+    fft_result = fft.radix4(inputs)
     expected = numpy.fft.fft(scaled_vector)
     actual = []
     for comp in fft_result:
@@ -57,10 +56,10 @@ def test_fft_accelerator_saturate(vector):
 
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_rounding(vector):
-    fft = FFTAccelerator()
+    fft = FFT()
     scaled_vector = vector / 4
     inputs = [ComplexFixedpoint(v, **PARAMS_ROUNDING) for v in scaled_vector]
-    fft_result = fft.driver(inputs)
+    fft_result = fft.radix4(inputs)
     expected = numpy.fft.fft(scaled_vector)
     actual = []
     for comp in fft_result:
@@ -72,10 +71,10 @@ def test_fft_accelerator_rounding(vector):
 
 @pytest.mark.parametrize("vector", test_vector_radix4)
 def test_fft_accelerator_saturate_rounding(vector):
-    fft = FFTAccelerator()
+    fft = FFT()
     scaled_vector = vector / 4
     inputs = [ComplexFixedpoint(v, **PARAMS_SATURATE_ROUNDING) for v in scaled_vector]
-    fft_result = fft.driver(inputs)
+    fft_result = fft.radix4(inputs)
     expected = numpy.fft.fft(scaled_vector)
     actual = []
     for comp in fft_result:
