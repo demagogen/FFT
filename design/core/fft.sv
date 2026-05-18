@@ -22,8 +22,13 @@ module radix4
     output logic signed [WIDTH - 1 : 0] result3_im
 );
 
-    // logic signed [2 * WIDTH - 1 : 0] tmp0_re, tmp0_im;
-
-    assign result0_re = (coeff0_re + coeff1_re + coeff2_re + coeff3_re) >>> 2;
+    assign result0_re = coeff0_re + coeff1_re + coeff2_re + coeff3_re;
+    assign result0_im = coeff0_im + coeff1_im + coeff2_im + coeff3_im;
+    assign result1_re = coeff0_re + coeff1_im - coeff2_re - coeff3_im;
+    assign result1_im = coeff0_im - coeff1_re - coeff2_im + coeff3_re;
+    assign result2_re = coeff0_re - coeff1_re + coeff2_re - coeff3_re;
+    assign result2_im = coeff0_im - coeff1_im + coeff2_im - coeff3_im;
+    assign result3_re = coeff0_re - coeff1_im - coeff2_re + coeff3_im;
+    assign result3_im = coeff0_im + coeff1_re - coeff2_im - coeff3_im;
 
 endmodule
