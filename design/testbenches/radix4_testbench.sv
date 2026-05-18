@@ -1,49 +1,65 @@
-`include "../core/fft.sv"
+`include "fft.sv"
 
+module radix4_testbench();
 
-//! Did not checked, Fizra started
-module radix4_testbench;
-  complex_t [2 : 0] twiddles;
-  complex_t [3 : 0] coeffs;
-  logic rounding_config;
-  logic overflow_exception;
-  complex_t [3 : 0] results;
+    localparam WIDTH = 16;
 
-  radix4 ex (
-      .twiddles(twiddles),
-      .coeffs(coeffs),
-      .rounding_config(1'b0),
-      .overflow_exception(overflow_exception),
-      .result(results)
-  );
+    logic signed [WIDTH - 1 : 0] coeff0_re;
+    logic signed [WIDTH - 1 : 0] coeff0_im;
+    logic signed [WIDTH - 1 : 0] coeff1_re;
+    logic signed [WIDTH - 1 : 0] coeff1_im;
+    logic signed [WIDTH - 1 : 0] coeff2_re;
+    logic signed [WIDTH - 1 : 0] coeff2_im;
+    logic signed [WIDTH - 1 : 0] coeff3_re;
+    logic signed [WIDTH - 1 : 0] coeff3_im;
 
-  initial begin
-    twiddles[0].re   = 16'h4000; // 1.0
-    twiddles[0].im   = 0;        // 0.0
-    twiddles[1].re   = 16'h4000; // 1.0
-    twiddles[1].im   = 0;        // 0.0
-    twiddles[2].re   = 0;        // 0.0
-    twiddles[2].im   = 16'h4000; // 1.0
-    coeffs[0].re = 16'h4000;     // 1.0
-    coeffs[0].im = 16'h4000;     // 0.5
-    coeffs[1].re = 16'h4000;     // 0.25
-    coeffs[1].im = 16'h4000;     // 0.125
-    coeffs[2].re = 16'h4000;     // 1.0
-    coeffs[2].im = 16'h4000;     // 0.5
-    coeffs[3].re = 16'h4000;     // 0.25
-    coeffs[3].im = 16'h4000;     // 0.125
+    logic signed [WIDTH - 1 : 0] result0_re;
+    logic signed [WIDTH - 1 : 0] result0_im;
+    logic signed [WIDTH - 1 : 0] result1_re;
+    logic signed [WIDTH - 1 : 0] result1_im;
+    logic signed [WIDTH - 1 : 0] result2_re;
+    logic signed [WIDTH - 1 : 0] result2_im;
+    logic signed [WIDTH - 1 : 0] result3_re;
+    logic signed [WIDTH - 1 : 0] result3_im;
 
-    #10;
+    radix4 dut(
+        .coeff0_re(coeff0_re),
+        .coeff0_im(coeff0_im),
+        .coeff1_re(coeff1_re),
+        .coeff1_im(coeff1_im),
+        .coeff2_re(coeff2_re),
+        .coeff2_im(coeff2_im),
+        .coeff3_re(coeff3_re),
+        .coeff3_im(coeff3_im),
 
-    $display("Result[0].re = %f", results[0].re >> 14);
-    $display("Result[0].im = %f", results[0].im >> 14);
-    $display("Result[1].re = %f", results[1].re >> 14);
-    $display("Result[1].im = %f", results[1].im >> 14);
-    $display("Result[2].re = %f", results[2].re >> 14);
-    $display("Result[2].im = %f", results[2].im >> 14);
-    $display("Result[3].re = %f", results[3].re >> 14);
-    $display("Result[3].im = %f", results[3].im >> 14);
+        .result0_re(result0_re),
+        .result0_im(result0_im),
+        .result1_re(result1_re),
+        .result1_im(result1_im),
+        .result2_re(result2_re),
+        .result2_im(result2_im),
+        .result3_re(result3_re),
+        .result3_im(result3_im)
+    );
 
-  end
+    initial begin
+        coeff0_re = 16'h4000;
+        coeff0_im = 16'h0;
+        coeff1_re = 16'h0;
+        coeff1_im = 16'h0;
+        coeff2_re = 16'h0;
+        coeff2_im = 16'h0;
+        coeff3_re = 16'h0;
+        coeff3_im = 16'h0;
+        #100;
+        $display("result0_re = %h", result0_re);
+        $display("result0_im = %h", result0_im);
+        $display("result1_re = %h", result1_re);
+        $display("result1_im = %h", result1_im);
+        $display("result2_re = %h", result2_re);
+        $display("result2_im = %h", result2_im);
+        $display("result3_re = %h", result3_re);
+        $display("result3_im = %h", result3_im);
+    end
 
 endmodule

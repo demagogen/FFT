@@ -1,14 +1,29 @@
-`include "math.sv"
-
 module radix4
+#(
+    WIDTH = 16
+)
 (
-    input wire complex_t [2 : 0] twiddles,
-    input wire complex_t [3 : 0] coeffs,
-    input wire rounding_config,
-    output logic overflow_exception,
-    output complex_t [3 : 0] result
+    input logic signed [WIDTH - 1 : 0] coeff0_re,
+    input logic signed [WIDTH - 1 : 0] coeff0_im,
+    input logic signed [WIDTH - 1 : 0] coeff1_re,
+    input logic signed [WIDTH - 1 : 0] coeff1_im,
+    input logic signed [WIDTH - 1 : 0] coeff2_re,
+    input logic signed [WIDTH - 1 : 0] coeff2_im,
+    input logic signed [WIDTH - 1 : 0] coeff3_re,
+    input logic signed [WIDTH - 1 : 0] coeff3_im,
+
+    output logic signed [WIDTH - 1 : 0] result0_re,
+    output logic signed [WIDTH - 1 : 0] result0_im,
+    output logic signed [WIDTH - 1 : 0] result1_re,
+    output logic signed [WIDTH - 1 : 0] result1_im,
+    output logic signed [WIDTH - 1 : 0] result2_re,
+    output logic signed [WIDTH - 1 : 0] result2_im,
+    output logic signed [WIDTH - 1 : 0] result3_re,
+    output logic signed [WIDTH - 1 : 0] result3_im
 );
 
+    // logic signed [2 * WIDTH - 1 : 0] tmp0_re, tmp0_im;
 
+    assign result0_re = (coeff0_re + coeff1_re + coeff2_re + coeff3_re) >>> 2;
 
 endmodule
